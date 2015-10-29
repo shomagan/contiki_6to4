@@ -28,12 +28,6 @@
  *
  */
 
-#ifndef PROJECT_ROUTER_CONF_H_
-#define PROJECT_ROUTER_CONF_H_
-
-#ifndef UIP_FALLBACK_INTERFACE
-#define UIP_FALLBACK_INTERFACE rpl_interface
-#endif
 
 #ifndef QUEUEBUF_CONF_NUM
 #define QUEUEBUF_CONF_NUM          10
@@ -47,21 +41,15 @@
 #define UIP_CONF_RECEIVE_WINDOW  512
 #endif
 
-#ifndef WEBSERVER_CONF_CFS_CONNS
-#define WEBSERVER_CONF_CFS_CONNS 2
-#endif
-
 #define UIP_CONF_TCP_MSS 256
 
 #define NETSTACK_CONF_RDC     nullrdc_driver
 
 #define NETSTACK_CONF_FRAMER  framer_802154
 
-#define CHANNEL_802_15_4          26
-//#define NETSTACK_CONF_RDC         cxmac_driver
-
 //#define SICSLOWPAN_CONF_FRAG                 0
+
+#define TARGET 1
 
 //#define DEBUG DEBUG_PRINT
 
-#endif /* PROJECT_ROUTER_CONF_H_ */

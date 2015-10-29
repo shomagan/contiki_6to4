@@ -1,0 +1,16 @@
+      //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        if ((UIP_IP_BUF->srcipaddr.u16[6] == 0xa8c0) && (UIP_IP_BUF->destipaddr.u16[7]==0x83fa)){
+          PRINTF("src=");
+          PRINT6ADDR(&UIP_IP_BUF->srcipaddr);
+          PRINTF(" dst=");
+          PRINT6ADDR(&UIP_IP_BUF->destipaddr);
+          PRINTF("proto%u",UIP_IP_BUF->proto);
+
+          PRINTF("\n");
+          slip_send();
+        }else{
+          PRINTF("src=%u",UIP_IP_BUF->srcipaddr.u16[6]);
+          PRINTF(" dst=%u",UIP_IP_BUF->destipaddr.u16[7]);
+        }
+
+      //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

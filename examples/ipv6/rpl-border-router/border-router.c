@@ -51,7 +51,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#define DEBUG DEBUG_NONE
+//#define DEBUG DEBUG_PRINT
 #include "net/ip/uip-debug.h"
 
 static uip_ipaddr_t prefix;
@@ -374,7 +374,7 @@ PROCESS_THREAD(border_router_process, ev, data)
 #if DEBUG || 1
   print_local_addresses();
 #endif
-
+  PRINTF("UIP_CONF_TCP_MSS %u \n",UIP_CONF_TCP_MSS);
   while(1) {
     PROCESS_YIELD();
     if (ev == sensors_event && data == &button_sensor) {

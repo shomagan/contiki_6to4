@@ -40,7 +40,8 @@
 
 #define UIP_IP_BUF        ((struct uip_ip_hdr *)&uip_buf[UIP_LLH_LEN])
 
-#define DEBUG DEBUG_NONE
+#define DEBUG 1
+#define PRINTF(...) printf(__VA_ARGS__)
 #include "net/ip/uip-debug.h"
 
 static uip_ipaddr_t last_sender;
@@ -110,7 +111,8 @@ static void
 init(void)
 {
   PRINTF("ip64-slip-interface: init\n");
-  //  slip_arch_init(BAUD2UBR(115200));
+  //slip_arch_init(BAUD2UBR(115200));
+  slip_arch_init(115200);
   process_start(&slip_process, NULL);
   slip_set_input_callback(input_callback);
 }

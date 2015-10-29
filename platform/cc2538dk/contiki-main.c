@@ -171,7 +171,7 @@ main(void)
   uart_init(1);
   uart_set_input(SERIAL_LINE_CONF_UART, serial_line_input_byte);
 #endif
-
+//  slip_arch_init(115200);
 #if USB_SERIAL_CONF_ENABLE
   usb_serial_init();
   usb_serial_set_input(serial_line_input_byte);

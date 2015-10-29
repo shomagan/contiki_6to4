@@ -937,6 +937,7 @@ ext_hdr_options_process(void)
 void
 uip_process(uint8_t flag)
 {
+
 #if UIP_TCP
   register struct uip_conn *uip_connr = uip_conn;
 #endif /* UIP_TCP */
@@ -1429,6 +1430,29 @@ uip_process(uint8_t flag)
     goto drop;
   }
 #endif /*UIP_CONF_IPV6_CHECKS*/
+#if TARGET
+ //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  if ((UIP_IP_BUF->srcipaddr.u16[6] != uip_ds6_if.addr_list[0].ipaddr.u16[6]) && \
+      (UIP_IP_BUF->destipaddr.u16[6]==uip_ds6_if.addr_list[0].ipaddr.u16[6]) && \
+      (UIP_IP_BUF->destipaddr.u16[7]==uip_ds6_if.addr_list[0].ipaddr.u16[7])){
+    remove_ext_hdr();
+    PRINTF("src=");
+    PRINT6ADDR(&UIP_IP_BUF->srcipaddr);
+    PRINTF("dst=");
+    PRINT6ADDR(&UIP_IP_BUF->destipaddr);
+    UIP_IP_BUF->proto = UIP_PROTO_ICMP6;
+//    UIP_ICMP_BUF->type = ICMP6_ECHO_REQUEST;
+    PRINTF("proto%u",UIP_IP_BUF->proto);
+    PRINTF("\n");
+//    memmove((uint8_t *)uip_buf, (uint8_t *)UIP_IP_BUF, uip_len - uip_ext_len);
+    slip_send();
+    goto drop;                                                          
+  }else{
+    PRINTF("src=%u",UIP_IP_BUF->srcipaddr.u16[6]);
+    PRINTF(" dst=%u",UIP_IP_BUF->destipaddr.u16[7]);
+  }
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#endif
 
   UIP_STAT(++uip_stat.icmp.recv);
   /*
@@ -1470,9 +1494,29 @@ uip_process(uint8_t flag)
  udp_input:
 
   remove_ext_hdr();
-
+#if TARGET
+ //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  if ((UIP_IP_BUF->srcipaddr.u16[6] != uip_ds6_if.addr_list[0].ipaddr.u16[6]) && \
+      (UIP_IP_BUF->destipaddr.u16[6]==uip_ds6_if.addr_list[0].ipaddr.u16[6]) && \
+      (UIP_IP_BUF->destipaddr.u16[7]==uip_ds6_if.addr_list[0].ipaddr.u16[7])){
+    PRINTF("src=");
+    PRINT6ADDR(&UIP_IP_BUF->srcipaddr);
+    PRINTF("dst=");
+    PRINT6ADDR(&UIP_IP_BUF->destipaddr);
+    UIP_IP_BUF->proto = UIP_PROTO_UDP;
+    PRINTF("proto%u",UIP_IP_BUF->proto);
+    PRINTF("\n");
+//    memmove((uint8_t *)uip_buf, (uint8_t *)UIP_IP_BUF, uip_len - uip_ext_len);
+    slip_send();
+    goto drop;                                                          
+  }else{
+    PRINTF("src=%u",UIP_IP_BUF->srcipaddr.u16[6]);
+    PRINTF(" dst=%u",UIP_IP_BUF->destipaddr.u16[7]);
+  }
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#endif
   PRINTF("Receiving UDP packet\n");
- 
+
   /* UDP processing is really just a hack. We don't do anything to the
      UDP/IP headers, but let the UDP application do all the hard
      work. If the application sets uip_slen, it has a packet to
@@ -1588,11 +1632,11 @@ uip_process(uint8_t flag)
 #if UIP_TCP
   /* TCP input processing. */
  tcp_input:
-
+  
   remove_ext_hdr();
-
   UIP_STAT(++uip_stat.tcp.recv);
   PRINTF("Receiving TCP packet\n");
+
   /* Start of TCP input header processing code. */
   
   if(uip_tcpchksum() != 0xffff) {   /* Compute and check the TCP
@@ -1603,6 +1647,27 @@ uip_process(uint8_t flag)
            uip_tcpchksum());
     goto drop;
   }
+#if TARGET
+ //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  if ((UIP_IP_BUF->srcipaddr.u16[6] != uip_ds6_if.addr_list[0].ipaddr.u16[6]) && \
+      (UIP_IP_BUF->destipaddr.u16[6]==uip_ds6_if.addr_list[0].ipaddr.u16[6]) && \
+      (UIP_IP_BUF->destipaddr.u16[7]==uip_ds6_if.addr_list[0].ipaddr.u16[7])){
+    PRINTF("src=");
+    PRINT6ADDR(&UIP_IP_BUF->srcipaddr);
+    PRINTF("dst=");
+    PRINT6ADDR(&UIP_IP_BUF->destipaddr);
+    UIP_IP_BUF->proto = UIP_PROTO_TCP;
+    PRINTF("proto%u",UIP_IP_BUF->proto);
+    PRINTF("\n");
+//    memmove((uint8_t *)uip_buf, (uint8_t *)UIP_IP_BUF, uip_len - uip_ext_len);
+    slip_send();
+    goto drop;                                                          
+  }else{
+    PRINTF("src=%u",UIP_IP_BUF->srcipaddr.u16[6]);
+    PRINTF(" dst=%u",UIP_IP_BUF->destipaddr.u16[7]);
+  }
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#endif                                                                 
 
   /* Make sure that the TCP port number is not zero. */
   if(UIP_TCP_BUF->destport == 0 || UIP_TCP_BUF->srcport == 0) {

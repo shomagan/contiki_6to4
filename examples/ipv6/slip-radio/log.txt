@@ -1,0 +1,269 @@
+/usr/bin/sh: /usr/bin/sed: Permission denied
+mkdir obj_cc2538dk
+  CC        ../../../apps/slip-cmd/cmd.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../apps/slip-cmd/packetutils.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/dev/leds.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../platform/cc2538dk/dev/leds-arch.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../platform/cc2538dk/./contiki-main.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/lib/sensors.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../platform/cc2538dk/dev/smartrf-sensors.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../platform/cc2538dk/dev/button-sensor.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../platform/cc2538dk/dev/als-sensor.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/./clock.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/./rtimer-arch.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/dev/uart.c
+../../../cpu/cc2538/dev/uart.c:228:1: warning: 'permit_pm1' defined but not used [-Wunused-function]
+ permit_pm1(void)
+ ^
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/dev/watchdog.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/dev/nvic.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/./cpu.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/dev/sys-ctrl.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/dev/gpio.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/dev/ioc.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/dev/spi.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/dev/adc.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/dev/crypto.c
+../../../cpu/cc2538/dev/crypto.c:76:1: warning: 'permit_pm1' defined but not used [-Wunused-function]
+ permit_pm1(void)
+ ^
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/dev/aes.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/dev/ccm.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/dev/sha256.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/dev/cc2538-rf.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/dev/udma.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/./lpm.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/dev/pka.c
+../../../cpu/cc2538/dev/pka.c:79:1: warning: 'permit_pm1' defined but not used [-Wunused-function]
+ permit_pm1(void)
+ ^
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/dev/bignum-driver.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/dev/ecc-driver.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/dev/ecc-algorithm.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/dev/ecc-curve.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/./dbg.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/./ieee-addr.c
+  CC        ../../../cpu/cc2538/./slip-arch.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/dev/slip.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/dev/i2c.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/dev/cc2538-temp-sensor.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/dev/vdd3-sensor.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/../arm/common/dbg-io/dbg-printf.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/../arm/common/dbg-io/dbg-snprintf.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/../arm/common/dbg-io/dbg-sprintf.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/../arm/common/dbg-io/strformat.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/../cc253x/usb/common/usb-core.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/../cc253x/usb/common/cdc-acm/cdc-acm.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/usb/usb-arch.c
+../../../cpu/cc2538/usb/usb-arch.c:316:1: warning: 'permit_pm1' defined but not used [-Wunused-function]
+ permit_pm1(void)
+ ^
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/usb/usb-serial.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/usb/cdc-acm-descriptors.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/sys/arg.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/sys/autostart.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/sys/compower.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/sys/ctimer.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/sys/energest.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/sys/etimer.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/sys/mt.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/sys/process.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/sys/procinit.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/sys/rtimer.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/sys/stimer.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/sys/timer.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/dev/nullradio.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/dev/serial-line.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/lib/aes-128.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/lib/assert.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/lib/ccm-star.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/lib/crc16.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/lib/gcr.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/lib/ifft.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/lib/list.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/lib/me.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/lib/me_tabs.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/lib/memb.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/lib/mmem.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/lib/petsciiconv.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/lib/print-stats.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/dev/random.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/lib/ringbuf.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/lib/settings.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/lib/trickle-timer.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/ipv6/sicslowpan.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/ipv6/uip-ds6-nbr.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/ipv6/uip-ds6-route.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/ipv6/uip-ds6.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/ipv6/uip-icmp6.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/ipv6/uip-nd6.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/ipv6/uip6.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/ip/dhcpc.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/ip/ip64-addr.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/ip/psock.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/ip/resolv.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/ip/simple-udp.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/ip/slipdev.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/ip/tcp-socket.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/ip/tcpip.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/ip/udp-socket.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/ip/uip-debug.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/ip/uip-nameserver.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/ip/uip-packetqueue.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/ip/uip-split.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/ip/uip-udp-packet.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/ip/uiplib.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/linkaddr.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/nbr-table.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/netstack.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/packetbuf.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/queuebuf.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/mac/csma.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/mac/frame802154.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/mac/framer-802154.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/mac/framer-nullmac.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/mac/mac-sequence.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/mac/mac.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/mac/nullmac.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/mac/nullrdc-noframer.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/mac/nullrdc.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/mac/phase.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/mac/contikimac/contikimac-framer.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/mac/contikimac/contikimac.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/llsec/anti-replay.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/llsec/ccm-star-packetbuf.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/llsec/nullsec.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  AR        contiki-cc2538dk.a
+  CC        ../../../cpu/cc2538/cc2538.lds
+  CC        ../../../cpu/cc2538/./startup-gcc.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        slip-radio.c
+  CC        slip-net.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        no-framer.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  LD        slip-radio.elf
+arm-none-eabi-objcopy -O ihex slip-radio.elf slip-radio.hex
+arm-none-eabi-objcopy -O binary --gap-fill 0xff slip-radio.elf slip-radio.bin
+cp slip-radio.elf slip-radio.cc2538dk
+rm slip-radio.co obj_cc2538dk/slip-net.o obj_cc2538dk/startup-gcc.o obj_cc2538dk/no-framer.o

@@ -34,6 +34,8 @@
 #include "net/ipv6/uip-ds6.h"
 #include "net/ip/uip-udp-packet.h"
 #include "sys/ctimer.h"
+#include "dev/slip.h"
+#include "dev/uart1.h"
 #ifdef WITH_COMPOWER
 #include "powertrace.h"
 #endif
@@ -45,18 +47,19 @@
 
 #define UDP_EXAMPLE_ID  190
 
-#define DEBUG DEBUG_PRINT
+#define DEBUG DEBUG_NONE
 #include "net/ip/uip-debug.h"
 
 #ifndef PERIOD
-#define PERIOD 60
+#define PERIOD 15
 #endif
 
 #define START_INTERVAL		(15 * CLOCK_SECOND)
 #define SEND_INTERVAL		(PERIOD * CLOCK_SECOND)
 #define SEND_TIME		(random_rand() % (SEND_INTERVAL))
 #define MAX_PAYLOAD_LEN		30
-
+#define PRINTF printf
+#define UIP_IP_BUF   ((struct uip_ip_hdr *)&uip_buf[UIP_LLH_LEN])
 static struct uip_udp_conn *client_conn;
 static uip_ipaddr_t server_ipaddr;
 
@@ -67,13 +70,23 @@ AUTOSTART_PROCESSES(&udp_client_process);
 static void
 tcpip_handler(void)
 {
-  char *str;
+  char *appdata;
 
   if(uip_newdata()) {
-    str = uip_appdata;
-    str[uip_datalen()] = '\0';
-    printf("DATA recv '%s'\n", str);
+    appdata = (char *)uip_appdata;
+    appdata[uip_datalen()] = 0;
+    PRINTF("DATA recv '%s' from ", appdata);
+    PRINTF("%d",
+           UIP_IP_BUF->srcipaddr.u8[sizeof(UIP_IP_BUF->srcipaddr.u8) - 1]);
+    PRINTF("\n");
+    PRINTF("DATA sending reply\n");
+    uip_ipaddr_copy(&client_conn->ripaddr, &UIP_IP_BUF->srcipaddr);
+    uip_udp_packet_send(client_conn, "Reply", sizeof("Reply"));
+    uip_create_unspecified(&client_conn->ripaddr);
+
   }
+
+
 }
 /*---------------------------------------------------------------------------*/
 static void
@@ -83,11 +96,11 @@ send_packet(void *ptr)
   char buf[MAX_PAYLOAD_LEN];
 
   seq_id++;
-  PRINTF("DATA send to %d 'Hello %d'\n",
+/*  PRINTF("DATA send to %d 'Hello %d'\n",
          server_ipaddr.u8[sizeof(server_ipaddr.u8) - 1], seq_id);
   sprintf(buf, "Hello %d from the client", seq_id);
   uip_udp_packet_sendto(client_conn, buf, strlen(buf),
-                        &server_ipaddr, UIP_HTONS(UDP_SERVER_PORT));
+                        &server_ipaddr, UIP_HTONS(UDP_SERVER_PORT));*/
 }
 /*---------------------------------------------------------------------------*/
 static void
@@ -95,7 +108,7 @@ print_local_addresses(void)
 {
   int i;
   uint8_t state;
-
+  PRINTF("UIP_DS6_ADDR_NB %u",UIP_DS6_ADDR_NB);  
   PRINTF("Client IPv6 addresses: ");
   for(i = 0; i < UIP_DS6_ADDR_NB; i++) {
     state = uip_ds6_if.addr_list[i].state;
@@ -134,13 +147,73 @@ set_global_address(void)
 #if 0
 /* Mode 1 - 64 bits inline */
    uip_ip6addr(&server_ipaddr, 0xaaaa, 0, 0, 0, 0, 0, 0, 1);
-#elif 1
+#elif 0
 /* Mode 2 - 16 bits inline */
   uip_ip6addr(&server_ipaddr, 0xaaaa, 0, 0, 0, 0, 0x00ff, 0xfe00, 1);
 #else
 /* Mode 3 - derived from server link-local (MAC) address */
-  uip_ip6addr(&server_ipaddr, 0xaaaa, 0, 0, 0, 0x0250, 0xc2ff, 0xfea8, 0xcd1a); //redbee-econotag
+
+  uip_ip6addr(&server_ipaddr, 0xaaaa, 0, 0, 0, 0x0212, 0x4b00, 0x040e, 0xf3ed); //redbee-econotag
+//  uip_ip6addr(&server_ipaddr, 0xaaaa, 0, 0, 0, 0x0250, 0xc2ff, 0xfea8, 0xcd1a); //redbee-econotag
 #endif
+}
+/*---------------------------------------------------------------------------*/
+void
+request_prefix(void)
+{
+  /* mess up uip_buf with a dirty request... */
+  uip_buf[0] = '?';
+  uip_buf[1] = 'P';
+  uip_len = 2;
+  slip_send();
+  uip_clear_buf();
+}
+/*---------------------------------------------------------------------------*/
+static void
+slip_input_callback(void)
+{
+  unsigned char i;
+  if (strncmp(uip_buf, "AdressTarget", 12) == 0){
+    //set new IPv6 addres
+    uip_ipaddr_t ipaddr;
+    uip_lladdr_t lladdr;
+    lladdr.addr[0] = 0x00;
+		lladdr.addr[1] = 0x12;
+		lladdr.addr[2] = 0x4b;
+		lladdr.addr[3] = 0x00;
+    lladdr.addr[4] = uip_buf[12];
+    lladdr.addr[5] = uip_buf[13];
+    lladdr.addr[6] = uip_buf[14];
+    lladdr.addr[7] = uip_buf[15];
+    for (i=0;i<4;i++){
+      if (uip_buf[12+i]= uip_ds6_if.addr_list[0].ipaddr.u8[12+i])
+        break;
+    }
+    if (i<4){
+      uip_ds6_addr_rm(&uip_ds6_if.addr_list[0]);
+      uip_ip6addr(&ipaddr, 0x2001, 0x0db8, 0, 0x0212, 0, 0, 0, 0);
+      uip_ds6_set_addr_iid(&ipaddr, &lladdr);
+      uip_ds6_addr_add(&ipaddr, 0, ADDR_AUTOCONF);
+      uip_buf[12] = uip_ds6_if.addr_list[0].ipaddr.u8[12];
+      uip_buf[13] = uip_ds6_if.addr_list[0].ipaddr.u8[13];
+      uip_buf[14] = uip_ds6_if.addr_list[0].ipaddr.u8[14];
+      uip_buf[15] = uip_ds6_if.addr_list[0].ipaddr.u8[15];
+      slip_write(uip_buf, 16);
+      print_local_addresses();
+    }
+  }
+ // PRINTF("SIN: %u\n", uip_len);
+
+}
+
+/*---------------------------------------------------------------------------*/
+static void
+slip_init(void)
+{
+  slip_arch_init(BAUD2UBR(115200));
+  process_start(&slip_process, NULL);
+  slip_set_input_callback(slip_input_callback);
+  PRINTF("slip init\n");
 }
 /*---------------------------------------------------------------------------*/
 PROCESS_THREAD(udp_client_process, ev, data)
@@ -168,7 +241,7 @@ PROCESS_THREAD(udp_client_process, ev, data)
     PROCESS_EXIT();
   }
   udp_bind(client_conn, UIP_HTONS(UDP_CLIENT_PORT)); 
-
+  PRINTF("UIP_CONF_TCP_MSS %u \n",UIP_CONF_TCP_MSS);
   PRINTF("Created a connection with the server ");
   PRINT6ADDR(&client_conn->ripaddr);
   PRINTF(" local/remote port %u/%u\n",
@@ -179,6 +252,8 @@ PROCESS_THREAD(udp_client_process, ev, data)
 #endif
 
   etimer_set(&periodic, SEND_INTERVAL);
+  request_prefix();
+  slip_init();
   while(1) {
     PROCESS_YIELD();
     if(ev == tcpip_event) {

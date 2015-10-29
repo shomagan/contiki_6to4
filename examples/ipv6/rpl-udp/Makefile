@@ -2,6 +2,8 @@ all: udp-client udp-server
 APPS=servreg-hack
 CONTIKI=../../..
 
+CFLAGS += -DPROJECT_CONF_H=\"project-conf.h\"
+
 ifdef WITH_COMPOWER
 APPS+=powertrace
 CFLAGS+= -DCONTIKIMAC_CONF_COMPOWER=1 -DWITH_COMPOWER=1 -DQUEUEBUF_CONF_NUM=4
@@ -16,3 +18,6 @@ endif
 
 CONTIKI_WITH_IPV6 = 1
 include $(CONTIKI)/Makefile.include
+
+
+

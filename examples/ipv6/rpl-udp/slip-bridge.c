@@ -57,14 +57,12 @@ static uip_ipaddr_t last_sender;
 static void
 slip_input_callback(void)
 {
-  unsigned char i;
-  static uip_ipaddr_t prefix;
  // PRINTF("SIN: %u\n", uip_len);
   if(uip_buf[0] == '!') {
     PRINTF("Got configuration message of type %c\n", uip_buf[1]);
     uip_clear_buf();
     if(uip_buf[1] == 'P') {
-
+      uip_ipaddr_t prefix;
       /* Here we set a prefix !!! */
       memset(&prefix, 0, 16);
       memcpy(&prefix, &uip_buf[2], 8);
@@ -86,19 +84,9 @@ slip_input_callback(void)
       }
       uip_len = 18;
       slip_send();
+      
     }
     uip_clear_buf();
-  }else if(strncmp(uip_buf, "AdressRouter", 12) == 0) {
-    memcpy(&uip_buf[12],&prefix, 8);
-    for (i=8;i<16;i++){
-      uip_buf[12+i] = uip_ds6_if.addr_list[2].ipaddr.u8[i];
-    }
-    PRINTF("uip_ds6_if.addr_list[0].ipaddr.u8 %u,%u,%u \n",
-            uip_ds6_if.addr_list[2].ipaddr.u8[0],
-            uip_ds6_if.addr_list[2].ipaddr.u8[1],
-            uip_ds6_if.addr_list[2].ipaddr.u8[2]);
-    //uip_ds6_if.addr_list[0].ipaddr.u8[12+i])
-    slip_write(uip_buf, 12+i);
   }
   /* Save the last sender received over SLIP to avoid bouncing the
      packet back if no route is found */
@@ -111,6 +99,7 @@ init(void)
   slip_arch_init(BAUD2UBR(115200));
   process_start(&slip_process, NULL);
   slip_set_input_callback(slip_input_callback);
+  PRINTF("slip init\n");
 }
 /*---------------------------------------------------------------------------*/
 static int

@@ -1,0 +1,43 @@
+using saved target 'cc2538dk'
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../cpu/cc2538/./ieee-addr.c
+  CC        ../../core/net/ip64/ip64.c
+../../core/net/ip64/ip64.c:912:1: warning: initialization from incompatible pointer type [enabled by default]
+ };
+ ^
+../../core/net/ip64/ip64.c:912:1: warning: (near initialization for 'ip64_uip_fallback_interface.output') [enabled by default]
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  AR        contiki-cc2538dk.a
+  CC        ../../cpu/cc2538/cc2538.lds
+  CC        ../../cpu/cc2538/./startup-gcc.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ip64-router.c
+ip64-router.c:28:0: warning: "PRINTF" redefined [enabled by default]
+ #define PRINTF printf
+ ^
+In file included from ip64-router.c:19:0:
+../../core/./net/ip/uip-debug.h:77:0: note: this is the location of the previous definition
+ #define PRINTF(...) printf(__VA_ARGS__)
+ ^
+ip64-router.c: In function 'process_thread_udp_server_process':
+ip64-router.c:76:1: warning: no return statement in function returning non-void [-Wreturn-type]
+ }
+ ^
+In file included from ../../core/./sys/process.h:56:0,
+                 from ../../core/./contiki.h:41,
+                 from ip64-router.c:1:
+ip64-router.c: At top level:
+../../core/./sys/process.h:274:18: warning: 'process_thread_udp_server_process' defined but not used [-Wunused-function]
+ static PT_THREAD(process_thread_##name(struct pt *process_pt, \
+                  ^
+../../core/./sys/pt.h:99:35: note: in definition of macro 'PT_THREAD'
+ #define PT_THREAD(name_args) char name_args
+                                   ^
+ip64-router.c:74:1: note: in expansion of macro 'PROCESS_THREAD'
+ PROCESS_THREAD(udp_server_process, ev, data)
+ ^
+  LD        ip64-router.elf
+arm-none-eabi-objcopy -O ihex ip64-router.elf ip64-router.hex
+arm-none-eabi-objcopy -O binary --gap-fill 0xff ip64-router.elf ip64-router.bin
+cp ip64-router.elf ip64-router.cc2538dk
+rm obj_cc2538dk/startup-gcc.o ip64-router.co

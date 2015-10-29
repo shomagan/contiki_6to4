@@ -49,11 +49,11 @@
 MEMB(entrymemb, struct ip64_addrmap_entry, NUM_ENTRIES);
 LIST(entrylist);
 
-#define FIRST_MAPPED_PORT 10000
+#define FIRST_MAPPED_PORT 1000
 #define LAST_MAPPED_PORT  20000
 static uint16_t mapped_port = FIRST_MAPPED_PORT;
 
-#define printf(...)
+//#define printf(...)
 
 /*---------------------------------------------------------------------------*/
 struct ip64_addrmap_entry *
@@ -160,6 +160,7 @@ struct ip64_addrmap_entry *
 ip64_addrmap_lookup_port(uint16_t mapped_port, uint8_t protocol)
 {
   struct ip64_addrmap_entry *m;
+  printf("addrmap_lookup_port\n");
 
   check_age();
   for(m = list_head(entrylist); m != NULL; m = list_item_next(m)) {

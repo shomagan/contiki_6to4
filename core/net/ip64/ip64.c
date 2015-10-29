@@ -69,7 +69,7 @@
 #include <string.h> /* for memcpy() */
 #include <stdio.h> /* for printf() */
 
-#define DEBUG 0
+#define DEBUG 1
 
 #if DEBUG
 #undef PRINTF
@@ -182,16 +182,22 @@ ip64_init(void)
 {
   int i;
   uint8_t state;
+  uip_ip4addr_t ipv4_temp_addr;
+  uip_ip4addr_t ip4_temp_netmask;
 
-  uip_ipaddr(&ipv4_broadcast_addr, 255,255,255,255);
+  uip_ipaddr(&ipv4_broadcast_addr, 172,16,1,5);
   ip64_hostaddr_configured = 0;
 
   PRINTF("ip64_init\n");
-  IP64_ETH_DRIVER.init();
+  IP64_CONF_UIP_FALLBACK_INTERFACE.init();
 #if IP64_DHCP
   ip64_ipv4_dhcp_init();
 #endif /* IP64_CONF_DHCP */
-
+//Config ip4 address
+  uip_ipaddr(&ipv4_temp_addr, 172,16,1,5);
+  uip_ipaddr(&ip4_temp_netmask, 255,255,255,0);
+  ip64_set_ipv4_address(&ipv4_temp_addr,&ip4_temp_netmask);
+//end config
   /* Specify an IPv6 address for local communication to the
      host. We'll just pick the first one we find in our list. */
   for(i = 0; i < UIP_DS6_ADDR_NB; i++) {
@@ -775,12 +781,10 @@ ip64_4to6(const uint8_t *ipv4packet, const uint16_t ipv4packet_len,
 
   /* Translate IPv4 broadcasts to IPv6 all-nodes multicasts. */
   if(uip_ip4addr_cmp(&v4hdr->destipaddr, &ipv4_broadcast_addr) ||
-     (uip_ipaddr_maskcmp(&v4hdr->destipaddr, &ip64_hostaddr,
-			 &ip64_netmask) &&
-      ((v4hdr->destipaddr.u16[0] & (~ip64_netmask.u16[0])) ==
-       (ipv4_broadcast_addr.u16[0] & (~ip64_netmask.u16[0]))) &&
-      ((v4hdr->destipaddr.u16[1] & (~ip64_netmask.u16[1])) ==
-       (ipv4_broadcast_addr.u16[1] & (~ip64_netmask.u16[1]))))) {
+     (uip_ipaddr_maskcmp(&v4hdr->destipaddr, &ip64_hostaddr,&ip64_netmask) &&
+      ((v4hdr->destipaddr.u16[0] & (~ip64_netmask.u16[0])) == (ipv4_broadcast_addr.u16[0] & (~ip64_netmask.u16[0]))) &&
+      ((v4hdr->destipaddr.u16[1] & (~ip64_netmask.u16[1])) == (ipv4_broadcast_addr.u16[1] & (~ip64_netmask.u16[1]))))) {
+    PRINTF("create_linklocal_allnodes_mcast\n");
     uip_create_linklocal_allnodes_mcast(&v6hdr->destipaddr);
   } else {
 
@@ -812,39 +816,38 @@ ip64_4to6(const uint8_t *ipv4packet, const uint16_t ipv4packet_len,
     if((v4hdr->proto == IP_PROTO_TCP || v4hdr->proto == IP_PROTO_UDP)) {
       if(uip_htons(tcphdr->destport) < EPHEMERAL_PORTRANGE) {
 	/* This packet should go to the local host. */
-	PRINTF("Port is in the non-ephemeral port range %d (%d)\n",
-	       tcphdr->destport, uip_htons(tcphdr->destport));
-	ip64_addr_copy6(&v6hdr->destipaddr, &ipv6_local_address);
+      	PRINTF("Port is in the non-ephemeral port range %d (%d)\n",
+	             tcphdr->destport, uip_htons(tcphdr->destport));
+      	ip64_addr_copy6(&v6hdr->destipaddr, &ipv6_local_address);
       } else if(ip64_special_ports_incoming_is_special(uip_htons(tcphdr->destport))) {
-	uip_ip6addr_t newip6addr;
-	uint16_t newport;
-	PRINTF("ip64 port %d (%d) is special, treating it differently\n",
-	       tcphdr->destport, uip_htons(tcphdr->destport));
-	if(ip64_special_ports_translate_incoming(uip_htons(tcphdr->destport),
+      	uip_ip6addr_t newip6addr;
+      	uint16_t newport;
+      	PRINTF("ip64 port %d (%d) is special, treating it differently\n",
+	      tcphdr->destport, uip_htons(tcphdr->destport));
+      	if(ip64_special_ports_translate_incoming(uip_htons(tcphdr->destport),
 						 &newip6addr, &newport)) {
-	  ip64_addr_copy6(&v6hdr->destipaddr, &newip6addr);
-	  tcphdr->destport = uip_htons(newport);
-	  PRINTF("New port %d (%d)\n",
-		 tcphdr->destport, uip_htons(tcphdr->destport));
-	} else {
-	  ip64_addr_copy6(&v6hdr->destipaddr, &ipv6_local_address);
-	  PRINTF("No new port\n");
-	}
+	        ip64_addr_copy6(&v6hdr->destipaddr, &newip6addr);
+      	  tcphdr->destport = uip_htons(newport);
+      	  PRINTF("New port %d (%d)\n",tcphdr->destport, uip_htons(tcphdr->destport));
+	      } else {
+      	  ip64_addr_copy6(&v6hdr->destipaddr, &ipv6_local_address);
+	        PRINTF("No new port\n");
+      	}
       } else {
-      /* The TCP or UDP port numbers were not non-ephemeral and not
-	 special, so we map the port number according to the address
-	 mapping table. */
+            /* The TCP or UDP port numbers were not non-ephemeral and not
+      	 special, so we map the port number according to the address
+      	 mapping table. */
 
-	m = ip64_addrmap_lookup_port(uip_ntohs(udphdr->destport),
-				     v4hdr->proto);
-	if(m == NULL) {
-	  PRINTF("Inbound lookup failed\n");
-	  return 0;
-	} else {
-	  PRINTF("Inbound lookup did not fail\n");
-	}
-	ip64_addr_copy6(&v6hdr->destipaddr, &m->ip6addr);
-	udphdr->destport = uip_htons(m->ip6port);
+      	m = ip64_addrmap_lookup_port(uip_ntohs(udphdr->destport),
+      				     v4hdr->proto);
+      	if(m == NULL) {
+      	  PRINTF("Inbound lookup failed\n");
+      	  return 0;
+      	} else {
+      	  PRINTF("Inbound lookup did not fail\n");
+      	}
+      	ip64_addr_copy6(&v6hdr->destipaddr, &m->ip6addr);
+      	udphdr->destport = uip_htons(m->ip6port);
       }
     }
   }
