@@ -67,6 +67,37 @@ static uip_ipaddr_t server_ipaddr;
 PROCESS(udp_client_process, "UDP client process");
 AUTOSTART_PROCESSES(&udp_client_process);
 /*---------------------------------------------------------------------------*/
+static uint16_t
+chksum(uint16_t sum, const uint8_t *data, uint16_t len)
+{
+  uint16_t t;
+  const uint8_t *dataptr;
+  const uint8_t *last_byte;
+
+  dataptr = data;
+  last_byte = data + len - 1;
+
+  while(dataptr < last_byte) {	/* At least two more bytes */
+    t = (dataptr[0] << 8) + dataptr[1];
+    sum += t;
+    if(sum < t) {
+      sum++;		/* carry */
+    }
+    dataptr += 2;
+  }
+
+  if(dataptr == last_byte) {
+    t = (dataptr[0] << 8) + 0;
+    sum += t;
+    if(sum < t) {
+      sum++;		/* carry */
+    }
+  }
+
+  /* Return sum in host byte order. */
+  return sum;
+}
+/*---------------------------------------------------------------------------*/
 static void
 tcpip_handler(void)
 {
@@ -173,33 +204,39 @@ static void
 slip_input_callback(void)
 {
   unsigned char i;
+  unsigned short chek_summ,chek_summ_recv;
   if (strncmp(uip_buf, "AdressTarget", 12) == 0){
-    //set new IPv6 addres
-    uip_ipaddr_t ipaddr;
-    uip_lladdr_t lladdr;
-    lladdr.addr[0] = 0x00;
-		lladdr.addr[1] = 0x12;
-		lladdr.addr[2] = 0x4b;
-		lladdr.addr[3] = 0x00;
-    lladdr.addr[4] = uip_buf[12];
-    lladdr.addr[5] = uip_buf[13];
-    lladdr.addr[6] = uip_buf[14];
-    lladdr.addr[7] = uip_buf[15];
-    for (i=0;i<4;i++){
-      if (uip_buf[12+i]= uip_ds6_if.addr_list[0].ipaddr.u8[12+i])
-        break;
-    }
-    if (i<4){
-      uip_ds6_addr_rm(&uip_ds6_if.addr_list[0]);
-      uip_ip6addr(&ipaddr, 0x2001, 0x0db8, 0, 0x0212, 0, 0, 0, 0);
-      uip_ds6_set_addr_iid(&ipaddr, &lladdr);
-      uip_ds6_addr_add(&ipaddr, 0, ADDR_AUTOCONF);
-      uip_buf[12] = uip_ds6_if.addr_list[0].ipaddr.u8[12];
-      uip_buf[13] = uip_ds6_if.addr_list[0].ipaddr.u8[13];
-      uip_buf[14] = uip_ds6_if.addr_list[0].ipaddr.u8[14];
-      uip_buf[15] = uip_ds6_if.addr_list[0].ipaddr.u8[15];
-      slip_write(uip_buf, 16);
-      print_local_addresses();
+    chek_summ =chksum(chek_summ,(uint8_t*)uip_buf,16);
+    chek_summ_recv = uip_buf[16];
+    chek_summ_recv |= ((uint16_t)uip_buf[17])<<8;
+    if (chek_summ_recv==chek_summ){
+      //set new IPv6 addres
+      uip_ipaddr_t ipaddr;
+      uip_lladdr_t lladdr;
+      lladdr.addr[0] = 0x00;
+  		lladdr.addr[1] = 0x12;
+  		lladdr.addr[2] = 0x4b;
+  		lladdr.addr[3] = 0x00;
+      lladdr.addr[4] = uip_buf[12];
+      lladdr.addr[5] = uip_buf[13];
+      lladdr.addr[6] = uip_buf[14];
+      lladdr.addr[7] = uip_buf[15];
+      for (i=0;i<4;i++){
+        if (uip_buf[12+i]!= uip_ds6_if.addr_list[0].ipaddr.u8[12+i])
+          break;
+      }
+      if (i<4){
+        uip_ds6_addr_rm(&uip_ds6_if.addr_list[0]);
+        uip_ip6addr(&ipaddr, 0x2001, 0x0db8, 0, 0x0212, 0, 0, 0, 0);
+        uip_ds6_set_addr_iid(&ipaddr, &lladdr);
+        uip_ds6_addr_add(&ipaddr, 0, ADDR_AUTOCONF);
+        uip_buf[12] = uip_ds6_if.addr_list[0].ipaddr.u8[12];
+        uip_buf[13] = uip_ds6_if.addr_list[0].ipaddr.u8[13];
+        uip_buf[14] = uip_ds6_if.addr_list[0].ipaddr.u8[14];
+        uip_buf[15] = uip_ds6_if.addr_list[0].ipaddr.u8[15];
+        slip_write(uip_buf, 16);
+        print_local_addresses();
+      }
     }
   }
  // PRINTF("SIN: %u\n", uip_len);

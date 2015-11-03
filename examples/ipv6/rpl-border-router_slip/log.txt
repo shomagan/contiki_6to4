@@ -1,12 +1,6 @@
 using saved target 'cc2538dk'
 /usr/bin/sh: /usr/bin/sed: Permission denied
 mkdir obj_cc2538dk
-  CC        ../../../apps/servreg-hack/servreg-hack.c
-../../../apps/servreg-hack/servreg-hack.c: In function 'parse_incoming_packet':
-../../../apps/servreg-hack/servreg-hack.c:335:7: warning: variable 'flags' set but not used [-Wunused-but-set-variable]
-   int flags;
-       ^
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/dev/leds.c
 /usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../platform/cc2538dk/dev/leds-arch.c
@@ -58,6 +52,16 @@ mkdir obj_cc2538dk
   CC        ../../../cpu/cc2538/dev/sha256.c
 /usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../cpu/cc2538/dev/cc2538-rf.c
+../../../cpu/cc2538/dev/cc2538-rf.c: In function 'on':
+../../../cpu/cc2538/dev/cc2538-rf.c:408:0: warning: "HGM_PIN" redefined [enabled by default]
+ #define HGM_PIN  (1 << 2)
+ ^
+In file included from ../../../platform/cc2538dk/./contiki-conf.h:283:0,
+                 from ../../../core/./contiki.h:38,
+                 from ../../../cpu/cc2538/dev/cc2538-rf.c:38:
+../../../platform/cc2538dk/dev/board.h:130:0: note: this is the location of the previous definition
+ #define HGM_PIN               4
+ ^
 /usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../cpu/cc2538/dev/udma.c
 /usr/bin/sh: /usr/bin/sed: Permission denied
@@ -186,9 +190,12 @@ mkdir obj_cc2538dk
 /usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/ipv6/uip6.c
 ../../../core/net/ipv6/uip6.c: In function 'uip_process':
-../../../core/net/ipv6/uip6.c:1448:5: warning: implicit declaration of function 'slip_send' [-Wimplicit-function-declaration]
-     slip_send();
-     ^
+../../../core/net/ipv6/uip6.c:1467:9: warning: implicit declaration of function 'slip_send' [-Wimplicit-function-declaration]
+         slip_send();
+         ^
+../../../core/net/ipv6/uip6.c:1468:9: warning: implicit declaration of function 'leds_toggle' [-Wimplicit-function-declaration]
+         leds_toggle(LEDS_ORANGE);
+         ^
 /usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/ip/dhcpc.c
 /usr/bin/sh: /usr/bin/sed: Permission denied
@@ -280,42 +287,53 @@ mkdir obj_cc2538dk
   CC        ../../../cpu/cc2538/cc2538.lds
   CC        ../../../cpu/cc2538/./startup-gcc.c
 /usr/bin/sh: /usr/bin/sed: Permission denied
-  CC        udp-client.c
-udp-client.c:61:0: warning: "PRINTF" redefined [enabled by default]
- #define PRINTF printf
- ^
-In file included from udp-client.c:51:0:
-../../../core/./net/ip/uip-debug.h:82:0: note: this is the location of the previous definition
- #define PRINTF(...)
- ^
-udp-client.c: In function 'send_packet':
-udp-client.c:127:8: warning: unused variable 'buf' [-Wunused-variable]
-   char buf[MAX_PAYLOAD_LEN];
-        ^
-udp-client.c: In function 'slip_input_callback':
-udp-client.c:208:3: warning: pointer targets in passing argument 1 of 'strncmp' differ in signedness [-Wpointer-sign]
-   if (strncmp(uip_buf, "AdressTarget", 12) == 0){
+  CC        border-router.c
+border-router.c: In function 'process_thread_border_router_process':
+border-router.c:389:7: warning: implicit declaration of function 'leds_toggle' [-Wimplicit-function-declaration]
+       leds_toggle(LEDS_GREEN);
+       ^
+border-router.c: At top level:
+border-router.c:59:22: warning: 'et' defined but not used [-Wunused-variable]
+ static struct etimer et;
+                      ^
+  CC        slip-bridge.c
+slip-bridge.c: In function 'slip_input_callback':
+slip-bridge.c:133:9: warning: implicit declaration of function 'watchdog_reboot' [-Wimplicit-function-declaration]
+         watchdog_reboot();
+         ^
+slip-bridge.c:135:9: warning: implicit declaration of function 'leds_on' [-Wimplicit-function-declaration]
+         leds_on(LEDS_RED);
+         ^
+slip-bridge.c:163:3: warning: pointer targets in passing argument 1 of 'strncmp' differ in signedness [-Wpointer-sign]
+   }else if(strncmp(uip_buf, "AdressRouter", 12) == 0) {
    ^
 In file included from c:\yagarto\arm-none-eabi\include\string.h:10:0,
                  from ../../../platform/cc2538dk/./contiki-conf.h:12,
-                 from ../../../core/./contiki.h:38,
-                 from udp-client.c:30:
+                 from ../../../core/./net/ip/uipopt.h:74,
+                 from ../../../core/./net/ip/uip.h:92,
+                 from slip-bridge.c:41:
 c:\yagarto\arm-none-eabi\include\string.h:35:6: note: expected 'const char *' but argument is of type 'uint8_t *'
  int  _EXFUN(strncmp,(const char *, const char *, size_t));
       ^
-udp-client.c:82:9: warning: 'chek_summ' may be used uninitialized in this function [-Wmaybe-uninitialized]
-     sum += t;
-         ^
-udp-client.c:207:18: note: 'chek_summ' was declared here
-   unsigned short chek_summ,chek_summ_recv;
-                  ^
-  LD        udp-client.elf
-arm-none-eabi-objcopy -O ihex udp-client.elf udp-client.hex
-arm-none-eabi-objcopy -O binary --gap-fill 0xff udp-client.elf udp-client.bin
-cp udp-client.elf udp-client.cc2538dk
-  CC        udp-server.c
-  LD        udp-server.elf
-arm-none-eabi-objcopy -O ihex udp-server.elf udp-server.hex
-arm-none-eabi-objcopy -O binary --gap-fill 0xff udp-server.elf udp-server.bin
-cp udp-server.elf udp-server.cc2538dk
-rm obj_cc2538dk/startup-gcc.o udp-client.co udp-server.co
+slip-bridge.c:179:3: warning: pointer targets in passing argument 1 of 'strncmp' differ in signedness [-Wpointer-sign]
+   }else if (strncmp(uip_buf, "AdressTarget", 12) == 0){
+   ^
+In file included from c:\yagarto\arm-none-eabi\include\string.h:10:0,
+                 from ../../../platform/cc2538dk/./contiki-conf.h:12,
+                 from ../../../core/./net/ip/uipopt.h:74,
+                 from ../../../core/./net/ip/uip.h:92,
+                 from slip-bridge.c:41:
+c:\yagarto\arm-none-eabi\include\string.h:35:6: note: expected 'const char *' but argument is of type 'uint8_t *'
+ int  _EXFUN(strncmp,(const char *, const char *, size_t));
+      ^
+slip-bridge.c:242:5: warning: implicit declaration of function 'leds_toggle' [-Wimplicit-function-declaration]
+     leds_toggle(LEDS_YELLOW);
+     ^
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        httpd-simple.c
+/usr/bin/sh: /usr/bin/sed: Permission denied
+  LD        border-router.elf
+arm-none-eabi-objcopy -O ihex border-router.elf border-router.hex
+arm-none-eabi-objcopy -O binary --gap-fill 0xff border-router.elf border-router.bin
+cp border-router.elf border-router.cc2538dk
+rm obj_cc2538dk/httpd-simple.o obj_cc2538dk/slip-bridge.o obj_cc2538dk/startup-gcc.o border-router.co

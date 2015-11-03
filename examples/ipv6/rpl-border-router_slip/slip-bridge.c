@@ -46,8 +46,8 @@
 
 #define UIP_IP_BUF        ((struct uip_ip_hdr *)&uip_buf[UIP_LLH_LEN])
 
-#define DEBUG DEBUG_PRINT
-#define PRINTF printf
+#define DEBUG DEBUG_NONE
+//#define PRINTF printf
 #include "net/ip/uip-debug.h"
 
 void set_prefix_64(uip_ipaddr_t *);
@@ -84,24 +84,57 @@ chksum(uint16_t sum, const uint8_t *data, uint16_t len)
   /* Return sum in host byte order. */
   return sum;
 }
+/*---------------------------------------------------------------------------*/
+static void
+print_local_addresses(void)
+{
+  int i;
+  uint8_t state;
+  PRINTF("UIP_DS6_ADDR_NB %u",UIP_DS6_ADDR_NB);  
+  PRINTF("Client IPv6 addresses: ");
+  for(i = 0; i < UIP_DS6_ADDR_NB; i++) {
+    state = uip_ds6_if.addr_list[i].state;
+    if(uip_ds6_if.addr_list[i].isused &&
+       (state == ADDR_TENTATIVE || state == ADDR_PREFERRED)) {
+      PRINT6ADDR(&uip_ds6_if.addr_list[i].ipaddr);
+      PRINTF("\n");
+      /* hack to make address "final" */
+      if (state == ADDR_TENTATIVE) {
+	uip_ds6_if.addr_list[i].state = ADDR_PREFERRED;
+      }
+    }
+  }
+}
 
 /*---------------------------------------------------------------------------*/
 static void
 slip_input_callback(void)
 {
-  unsigned char i;
+//  svalka
+//        device_type_seting
+
+//
+  unsigned char i,j;
   unsigned short chek_summ,chek_summ_recv;
   static uip_ipaddr_t prefix;
+  uip_ds6_addr_t *ds6_addr_t;
+
   chek_summ =0;
  // PRINTF("SIN: %u\n", uip_len);
-  if(uip_buf[0] == '!') {
+
+  if((uip_buf[0] == '!')&&(uip_buf[1] == 'P')) {
     PRINTF("Got configuration message of type %c\n", uip_buf[1]);
-    uip_clear_buf();
-    if(uip_buf[1] == 'P') {
-      chek_summ =chksum(chek_summ,(uint8_t*)uip_buf,10);
-      chek_summ_recv = uip_buf[10];
-      chek_summ_recv |= ((uint16_t)uip_buf[11])<<8;
-      if (chek_summ_recv==chek_summ){
+    chek_summ =chksum(chek_summ,(uint8_t*)uip_buf,10);
+    chek_summ_recv = uip_buf[10];
+    chek_summ_recv |= ((uint16_t)uip_buf[11])<<8;
+    if (chek_summ_recv==chek_summ){
+      if (device_type_seting == TARGET_TYPE){
+        device_type_seting=0;
+        watchdog_reboot();
+      }else{
+        leds_on(LEDS_RED);
+        time_blink =2;
+        device_type_seting=ROUTER_TYPE;
         /* Here we set a prefix !!! */
         memset(&prefix, 0, 16);
         memcpy(&prefix, &uip_buf[2], 8);
@@ -111,6 +144,7 @@ slip_input_callback(void)
         set_prefix_64(&prefix);
       }
     }
+    uip_clear_buf();
   } else if (uip_buf[0] == '?') {
     PRINTF("Got request message of type %c\n", uip_buf[1]);
     if(uip_buf[1] == 'M') {
@@ -127,22 +161,88 @@ slip_input_callback(void)
     }
     uip_clear_buf();
   }else if(strncmp(uip_buf, "AdressRouter", 12) == 0) {
-    memcpy(&uip_buf[12],&prefix, 8);
-    for (i=8;i<16;i++){
-      uip_buf[12+i] = uip_ds6_if.addr_list[2].ipaddr.u8[i];
+    if (device_type_seting == TARGET_TYPE){
+      device_type_seting=0;
+      watchdog_reboot();
+    }else{
+      memcpy(&uip_buf[12],&prefix, 8);
+      for (i=8;i<16;i++){
+        uip_buf[12+i] = uip_ds6_if.addr_list[2].ipaddr.u8[i];
+      }
+      PRINTF("uip_ds6_if.addr_list[0].ipaddr.u8 %u,%u,%u \n",
+              uip_ds6_if.addr_list[2].ipaddr.u8[0],
+              uip_ds6_if.addr_list[2].ipaddr.u8[1],
+              uip_ds6_if.addr_list[2].ipaddr.u8[2]);
+      //uip_ds6_if.addr_list[0].ipaddr.u8[12+i])
+      slip_write(uip_buf, 12+i);
     }
-    PRINTF("uip_ds6_if.addr_list[0].ipaddr.u8 %u,%u,%u \n",
-            uip_ds6_if.addr_list[2].ipaddr.u8[0],
-            uip_ds6_if.addr_list[2].ipaddr.u8[1],
-            uip_ds6_if.addr_list[2].ipaddr.u8[2]);
-    //uip_ds6_if.addr_list[0].ipaddr.u8[12+i])
-    slip_write(uip_buf, 12+i);
-  }
+  }else if (strncmp(uip_buf, "AdressTarget", 12) == 0){
+    chek_summ =chksum(chek_summ,(uint8_t*)uip_buf,16);
+    chek_summ_recv = uip_buf[16];
+    chek_summ_recv |= ((uint16_t)uip_buf[17])<<8;
+    if (chek_summ_recv==chek_summ){
+      if (device_type_seting == ROUTER_TYPE){
+        device_type_seting=0;
+        watchdog_reboot();
+      }else{
+        leds_on(LEDS_RED);
+        //set new IPv6 addres
+        uip_ipaddr_t ipaddr;
+        uip_lladdr_t lladdr;
+        lladdr.addr[0] = 0x00;
+    		lladdr.addr[1] = 0x12;
+    		lladdr.addr[2] = 0x4b;
+    		lladdr.addr[3] = 0x00;
+        lladdr.addr[4] = uip_buf[12];
+        lladdr.addr[5] = uip_buf[13];
+        lladdr.addr[6] = uip_buf[14];
+        lladdr.addr[7] = uip_buf[15];
+        if (device_type_seting==0){
+/*          uip_ip6addr(&ipaddr, 0x2001, 0x0db8, 0, 0x0212, 0, 0, 0, 0);
+          uip_ds6_set_addr_iid(&ipaddr, &lladdr);
+          uip_ds6_addr_add(&ipaddr, 0, ADDR_MANUAL);  */
+
+          uip_ip6addr(&ipaddr, 0xaaaa, 0, 0, 0, 0, 0, 0, 0);
+          uip_ds6_set_addr_iid(&ipaddr, &uip_lladdr);
+          uip_ds6_addr_add(&ipaddr, 0, ADDR_AUTOCONF);
+        }
+        for(j = 0; j < UIP_DS6_ADDR_NB; j++) {
+          for (i=0;i<4;i++){
+            if (uip_buf[12+i]!= uip_ds6_if.addr_list[j].ipaddr.u8[12+i])
+              break;
+          }
+          if (i==4)
+            break;
+          
+        }
+        if (j==UIP_DS6_ADDR_NB){
+          if (device_type_seting==TARGET_TYPE){
+            watchdog_reboot();
+          }else{
+            uip_ds6_addr_rm(&uip_ds6_if.addr_list[0]);
+          }
+          uip_ip6addr(&ipaddr, 0x2001, 0x0db8, 0, 0x0212, 0, 0, 0, 0);
+          uip_ds6_set_addr_iid(&ipaddr, &lladdr);
+          ds6_addr_t = uip_ds6_addr_add(&ipaddr, 0, ADDR_AUTOCONF);
+          uip_buf[12] = ds6_addr_t->ipaddr.u8[12];
+          uip_buf[13] = ds6_addr_t->ipaddr.u8[13];
+          uip_buf[14] = ds6_addr_t->ipaddr.u8[14];
+          uip_buf[15] = ds6_addr_t->ipaddr.u8[15];
+          slip_write(uip_buf, 16);
+          print_local_addresses();
+        }
+        print_local_addresses();
+        device_type_seting = TARGET_TYPE;
+        time_blink =1;
+      }
+    }
+  }else{
   /* Save the last sender received over SLIP to avoid bouncing the
      packet back if no route is found */
-  uip_ipaddr_copy(&last_sender, &UIP_IP_BUF->srcipaddr);
+    leds_toggle(LEDS_YELLOW);
+    uip_ipaddr_copy(&last_sender, &UIP_IP_BUF->srcipaddr);
+  }
 }
-
 /*---------------------------------------------------------------------------*/
 static void
 init(void)

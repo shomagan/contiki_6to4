@@ -50,33 +50,19 @@
 void
 leds_arch_init(void)
 {
-#if DISCOVERY
   GPIO_SET_OUTPUT(GPIO_C_BASE, LEDS_GPIO_PIN_MASK);
-#else//DISCOVERY
-  GPIO_SET_OUTPUT(GPIO_B_BASE, LEDS_GPIO_PIN_MASK);
-#endif//DISCOVERY
 }
 /*---------------------------------------------------------------------------*/
 unsigned char
 leds_arch_get(void)
 {
-#if DISCOVERY
   return GPIO_READ_PIN(GPIO_C_BASE, LEDS_GPIO_PIN_MASK);
-#else//DISCOVERY
-  return GPIO_READ_PIN(GPIO_B_BASE, LEDS_GPIO_PIN_MASK);
-#endif//DISCOVERY
-
-
 }
 /*---------------------------------------------------------------------------*/
 void
 leds_arch_set(unsigned char leds)
 {
-#if DISCOVERY
   GPIO_WRITE_PIN(GPIO_C_BASE, LEDS_GPIO_PIN_MASK, leds);
-#else//DISCOVERY
-  GPIO_WRITE_PIN(GPIO_B_BASE, LEDS_GPIO_PIN_MASK, leds);
-#endif//DISCOVERY
 }
 /*---------------------------------------------------------------------------*/
 

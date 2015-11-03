@@ -62,10 +62,10 @@
 /** \name SmartRF LED configuration
  *
  * LEDs on the SmartRF06 (EB and BB) are connected as follows:
- * - LED1 (Red)    -> PC0 if not DISCOVERY PB2
- * - LED2 (Yellow) -> PC1 if not DISCOVERY PB3
- * - LED3 (Green)  -> PC2 if not DISCOVERY PB4
- * - LED4 (Orange) -> PC3 if not DISCOVERY PB5
+ * - LED1 (Red)    -> PC0
+ * - LED2 (Yellow) -> PC1
+ * - LED3 (Green)  -> PC2
+ * - LED4 (Orange) -> PC3
  *
  * LED1 shares the same pin with the USB pullup
  * @{
@@ -78,10 +78,6 @@
 #undef LEDS_RED
 #undef LEDS_CONF_ALL
 
-//#define LEDS_YELLOW    2 /**< LED2 (Yellow) -> PC1 */
-//#define LEDS_GREEN     4 /**< LED3 (Green)  -> PC2 */
-//#define LEDS_ORANGE    8 /**< LED4 (Orange) -> PC3 */
-#if DISCOVERY
 #define LEDS_YELLOW             2 /**< LED2 (Yellow) -> PC1 */
 #define LEDS_GREEN              4 /**< LED3 (Green)  -> PC2 */
 #define LEDS_ORANGE             8 /**< LED4 (Orange) -> PC3 */
@@ -94,45 +90,9 @@
 #define LEDS_RED                1 /**< LED1 (Red)    -> PC0 */
 #endif
 
-#else//DISCOVERY
-#define LEDS_YELLOW    4 /**< LED2 (Yellow) -> PC1 */
-#define LEDS_GREEN     8 /**< LED3 (Green)  -> PC2 */
-#define LEDS_ORANGE    16 /**< LED4 (Orange) -> PC3 */
-
-#if USB_SERIAL_CONF_ENABLE
-#define LEDS_CONF_ALL 28
-#define LEDS_RED LEDS_ORANGE
-#else
-#define LEDS_CONF_ALL 60
-#define LEDS_RED       32 /**< LED1 (Red)    -> PC0 */
-#endif
-
-#endif//DISCOVERY
-
 /* Notify various examples that we have LEDs */
 #define PLATFORM_HAS_LEDS       1
 /** @} */
-/*---------------------------------------------------------------------------*/
-/** \name cc2592 configuration
- *
- * On the cc2592, control blok consit
- * following ports/pins
- * - PA_EN:   PC3
- * - LNA_EN:  PC2
- * - HGM: PD2
- * @{
- */
-#define CC2592_EN_POR         GPIO_C_BASE
-#define PA_EN_PIN             8
-#define LNA_EN_PIN            4
-
-#define HGM_PORT              GPIO_D_BASE
-#define HGM_PIN               4
-
-#define CC2292_PIN_EN_MASK       12
-#define CC2292_PIN_HGM_MASK      4
-/** @} */
-
 /*---------------------------------------------------------------------------*/
 /** \name USB configuration
  *

@@ -937,7 +937,7 @@ ext_hdr_options_process(void)
 void
 uip_process(uint8_t flag)
 {
-
+  uint8_t i;
 #if UIP_TCP
   register struct uip_conn *uip_connr = uip_conn;
 #endif /* UIP_TCP */
@@ -1441,19 +1441,38 @@ uip_process(uint8_t flag)
     PRINTF("dst=");
     PRINT6ADDR(&UIP_IP_BUF->destipaddr);
     UIP_IP_BUF->proto = UIP_PROTO_ICMP6;
-//    UIP_ICMP_BUF->type = ICMP6_ECHO_REQUEST;
     PRINTF("proto%u",UIP_IP_BUF->proto);
     PRINTF("\n");
-//    memmove((uint8_t *)uip_buf, (uint8_t *)UIP_IP_BUF, uip_len - uip_ext_len);
     slip_send();
     goto drop;                                                          
   }else{
     PRINTF("src=%u",UIP_IP_BUF->srcipaddr.u16[6]);
     PRINTF(" dst=%u",UIP_IP_BUF->destipaddr.u16[7]);
   }
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-#endif
 
+#elif COMMON_DEVICE
+  if (device_type_seting==TARGET_TYPE){
+    for(i = 0; i < UIP_DS6_ADDR_NB; i++) {
+      if ((UIP_IP_BUF->srcipaddr.u16[6] != uip_ds6_if.addr_list[i].ipaddr.u16[6]) && \
+          (UIP_IP_BUF->destipaddr.u16[6]==uip_ds6_if.addr_list[i].ipaddr.u16[6]) && \
+          (UIP_IP_BUF->destipaddr.u16[7]==uip_ds6_if.addr_list[i].ipaddr.u16[7])){
+        remove_ext_hdr();
+        PRINTF("src=");
+        PRINT6ADDR(&UIP_IP_BUF->srcipaddr);
+        PRINTF("dst=");
+        PRINT6ADDR(&UIP_IP_BUF->destipaddr);
+        UIP_IP_BUF->proto = UIP_PROTO_ICMP6;
+        PRINTF("proto%u",UIP_IP_BUF->proto);
+        PRINTF("\n");
+        slip_send();
+        leds_toggle(LEDS_ORANGE);
+        goto drop;                                                          
+      }
+    }
+  }
+  PRINTF("device_type_seting%u",device_type_seting);
+#endif
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   UIP_STAT(++uip_stat.icmp.recv);
   /*
    * Here we process incoming ICMPv6 packets
@@ -1513,8 +1532,29 @@ uip_process(uint8_t flag)
     PRINTF("src=%u",UIP_IP_BUF->srcipaddr.u16[6]);
     PRINTF(" dst=%u",UIP_IP_BUF->destipaddr.u16[7]);
   }
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+#elif COMMON_DEVICE
+  if (device_type_seting==TARGET_TYPE){
+    for(i = 0; i < UIP_DS6_ADDR_NB; i++) {
+      if ((UIP_IP_BUF->srcipaddr.u16[6] != uip_ds6_if.addr_list[i].ipaddr.u16[6]) && \
+          (UIP_IP_BUF->destipaddr.u16[6]==uip_ds6_if.addr_list[i].ipaddr.u16[6]) && \
+          (UIP_IP_BUF->destipaddr.u16[7]==uip_ds6_if.addr_list[i].ipaddr.u16[7])){
+        PRINTF("src=");
+        PRINT6ADDR(&UIP_IP_BUF->srcipaddr);
+        PRINTF("dst=");
+        PRINT6ADDR(&UIP_IP_BUF->destipaddr);
+        UIP_IP_BUF->proto = UIP_PROTO_UDP;
+        PRINTF("proto%u",UIP_IP_BUF->proto);
+        PRINTF("\n");
+        slip_send();
+        leds_toggle(LEDS_ORANGE);
+        goto drop;                                                          
+      }
+    }
+  }
 #endif
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
   PRINTF("Receiving UDP packet\n");
 
   /* UDP processing is really just a hack. We don't do anything to the
@@ -1659,15 +1699,33 @@ uip_process(uint8_t flag)
     UIP_IP_BUF->proto = UIP_PROTO_TCP;
     PRINTF("proto%u",UIP_IP_BUF->proto);
     PRINTF("\n");
-//    memmove((uint8_t *)uip_buf, (uint8_t *)UIP_IP_BUF, uip_len - uip_ext_len);
     slip_send();
     goto drop;                                                          
   }else{
     PRINTF("src=%u",UIP_IP_BUF->srcipaddr.u16[6]);
     PRINTF(" dst=%u",UIP_IP_BUF->destipaddr.u16[7]);
   }
+#elif COMMON_DEVICE
+  if (device_type_seting==TARGET_TYPE){
+    for(i = 0; i < UIP_DS6_ADDR_NB; i++) {
+      if ((UIP_IP_BUF->srcipaddr.u16[6] != uip_ds6_if.addr_list[i].ipaddr.u16[6]) && \
+          (UIP_IP_BUF->destipaddr.u16[6]==uip_ds6_if.addr_list[i].ipaddr.u16[6]) && \
+          (UIP_IP_BUF->destipaddr.u16[7]==uip_ds6_if.addr_list[i].ipaddr.u16[7])){
+        PRINTF("src=");
+        PRINT6ADDR(&UIP_IP_BUF->srcipaddr);
+        PRINTF("dst=");
+        PRINT6ADDR(&UIP_IP_BUF->destipaddr);
+        UIP_IP_BUF->proto = UIP_PROTO_TCP;
+        PRINTF("proto%u",UIP_IP_BUF->proto);
+        PRINTF("\n");
+        slip_send();
+        leds_toggle(LEDS_ORANGE);
+        goto drop;                                                          
+      }
+    }
+  }
+#endif
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-#endif                                                                 
 
   /* Make sure that the TCP port number is not zero. */
   if(UIP_TCP_BUF->destport == 0 || UIP_TCP_BUF->srcport == 0) {
