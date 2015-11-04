@@ -36,7 +36,7 @@
 #endif
 
 #ifndef QUEUEBUF_CONF_NUM
-#define QUEUEBUF_CONF_NUM          8
+#define QUEUEBUF_CONF_NUM          6
 #endif
 
 #ifndef UIP_CONF_BUFFER_SIZE
@@ -44,23 +44,23 @@
 #endif
 
 #ifndef UIP_CONF_RECEIVE_WINDOW
-#define UIP_CONF_RECEIVE_WINDOW  512
+#define UIP_CONF_RECEIVE_WINDOW  384
 #endif
 
 #ifndef WEBSERVER_CONF_CFS_CONNS
 #define WEBSERVER_CONF_CFS_CONNS 2
 #endif
 
-#define UIP_CONF_TCP_MSS 256
+#define UIP_CONF_TCP_MSS 384
 
 #define NETSTACK_CONF_RDC     nullrdc_driver
 //#define NETSTACK_CONF_RDC         cxmac_driver
 
-#define NETSTACK_CONF_RDC_CHANNEL_CHECK_RATE 16
+#define NETSTACK_CONF_RDC_CHANNEL_CHECK_RATE 128
 
 #define NETSTACK_CONF_FRAMER  framer_802154
 
-#define CHANNEL_802_15_4          26
+#define CC2538_RF_CONF_CHANNEL              26
 
 #define COMMON_DEVICE 1
 
