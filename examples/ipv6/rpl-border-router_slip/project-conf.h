@@ -69,6 +69,7 @@
 
 extern uint8_t device_type_seting;
 extern uint8_t time_blink;
+
 #define DISCOVERY 0
 
 

@@ -51,7 +51,7 @@
 #include "net/ip/uip-debug.h"
 
 void set_prefix_64(uip_ipaddr_t *);
-
+uip_ipaddr_t inside_prefix;
 static uip_ipaddr_t last_sender;
 /*---------------------------------------------------------------------------*/
 static uint16_t
@@ -116,7 +116,6 @@ slip_input_callback(void)
 //
   unsigned char i,j;
   unsigned short chek_summ,chek_summ_recv;
-  static uip_ipaddr_t prefix;
   uip_ds6_addr_t *ds6_addr_t;
 
   chek_summ =0;
@@ -136,12 +135,12 @@ slip_input_callback(void)
         time_blink =2;
         device_type_seting=ROUTER_TYPE;
         /* Here we set a prefix !!! */
-        memset(&prefix, 0, 16);
-        memcpy(&prefix, &uip_buf[2], 8);
+        memset(&inside_prefix, 0, 16);
+        memcpy(&inside_prefix, &uip_buf[2], 8);
         PRINTF("Setting prefix ");
-        PRINT6ADDR(&prefix);
+        PRINT6ADDR(&inside_prefix);
         PRINTF("\n");
-        set_prefix_64(&prefix);
+        set_prefix_64(&inside_prefix);
       }
     }
     uip_clear_buf();
@@ -165,7 +164,7 @@ slip_input_callback(void)
       device_type_seting=0;
       watchdog_reboot();
     }else{
-      memcpy(&uip_buf[12],&prefix, 8);
+      memcpy(&uip_buf[12],&inside_prefix, 8);
       for (i=8;i<16;i++){
         uip_buf[12+i] = uip_ds6_if.addr_list[2].ipaddr.u8[i];
       }
@@ -177,9 +176,9 @@ slip_input_callback(void)
       slip_write(uip_buf, 12+i);
     }
   }else if (strncmp(uip_buf, "AdressTarget", 12) == 0){
-    chek_summ =chksum(chek_summ,(uint8_t*)uip_buf,16);
-    chek_summ_recv = uip_buf[16];
-    chek_summ_recv |= ((uint16_t)uip_buf[17])<<8;
+    chek_summ =chksum(chek_summ,(uint8_t*)uip_buf,28);
+    chek_summ_recv = uip_buf[28];
+    chek_summ_recv |= ((uint16_t)uip_buf[29])<<8;
     if (chek_summ_recv==chek_summ){
       if (device_type_seting == ROUTER_TYPE){
         device_type_seting=0;
@@ -189,14 +188,17 @@ slip_input_callback(void)
         //set new IPv6 addres
         uip_ipaddr_t ipaddr;
         uip_lladdr_t lladdr;
-        lladdr.addr[0] = 0x00;
-    		lladdr.addr[1] = 0x12;
-    		lladdr.addr[2] = 0x4b;
-    		lladdr.addr[3] = 0x00;
-        lladdr.addr[4] = uip_buf[12];
-        lladdr.addr[5] = uip_buf[13];
-        lladdr.addr[6] = uip_buf[14];
-        lladdr.addr[7] = uip_buf[15];
+
+        memset(&inside_prefix, 0, 16);
+        memcpy(&inside_prefix, &uip_buf[12], 8);
+        lladdr.addr[0] = uip_buf[20];
+    		lladdr.addr[1] = uip_buf[21];
+    		lladdr.addr[2] = uip_buf[22];
+    		lladdr.addr[3] = uip_buf[23];
+        lladdr.addr[4] = uip_buf[24];
+        lladdr.addr[5] = uip_buf[25];
+        lladdr.addr[6] = uip_buf[26];
+        lladdr.addr[7] = uip_buf[27];
         if (device_type_seting==0){
 /*          uip_ip6addr(&ipaddr, 0x2001, 0x0db8, 0, 0x0212, 0, 0, 0, 0);
           uip_ds6_set_addr_iid(&ipaddr, &lladdr);
@@ -208,7 +210,7 @@ slip_input_callback(void)
         }
         for(j = 0; j < UIP_DS6_ADDR_NB; j++) {
           for (i=0;i<4;i++){
-            if (uip_buf[12+i]!= uip_ds6_if.addr_list[j].ipaddr.u8[12+i])
+            if (uip_buf[24+i]!= uip_ds6_if.addr_list[j].ipaddr.u8[12+i])
               break;
           }
           if (i==4)
@@ -221,15 +223,19 @@ slip_input_callback(void)
           }else{
             uip_ds6_addr_rm(&uip_ds6_if.addr_list[0]);
           }
-          uip_ip6addr(&ipaddr, 0x2001, 0x0db8, 0, 0x0212, 0, 0, 0, 0);
-          uip_ds6_set_addr_iid(&ipaddr, &lladdr);
-          ds6_addr_t = uip_ds6_addr_add(&ipaddr, 0, ADDR_AUTOCONF);
+          uip_ds6_set_addr_iid(&inside_prefix, &lladdr);
+          ds6_addr_t = uip_ds6_addr_add(&inside_prefix, 0, ADDR_AUTOCONF);
           uip_buf[12] = ds6_addr_t->ipaddr.u8[12];
           uip_buf[13] = ds6_addr_t->ipaddr.u8[13];
           uip_buf[14] = ds6_addr_t->ipaddr.u8[14];
           uip_buf[15] = ds6_addr_t->ipaddr.u8[15];
           slip_write(uip_buf, 16);
-          print_local_addresses();
+        }else{
+          uip_buf[12] = lladdr.addr[4];
+          uip_buf[13] = lladdr.addr[5];
+          uip_buf[14] = lladdr.addr[6];
+          uip_buf[15] = lladdr.addr[7];
+          slip_write(uip_buf, 16);
         }
         print_local_addresses();
         device_type_seting = TARGET_TYPE;
@@ -247,7 +253,7 @@ slip_input_callback(void)
 static void
 init(void)
 {
-  slip_arch_init(BAUD2UBR(115200));
+  slip_arch_init(115200*4);
   process_start(&slip_process, NULL);
   slip_set_input_callback(slip_input_callback);
 }

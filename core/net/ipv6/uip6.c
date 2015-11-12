@@ -80,12 +80,12 @@
 #include "net/ipv6/multicast/uip-mcast6.h"
 
 #include <string.h>
-
+extern uip_ipaddr_t inside_prefix;
 /*---------------------------------------------------------------------------*/
 /* For Debug, logging, statistics                                            */
 /*---------------------------------------------------------------------------*/
 
-#define DEBUG DEBUG_NONE
+#define DEBUG DEBUG_PRINT
 #include "net/ip/uip-debug.h"
 
 #if UIP_CONF_IPV6_RPL
@@ -1432,8 +1432,7 @@ uip_process(uint8_t flag)
 #endif /*UIP_CONF_IPV6_CHECKS*/
 #if TARGET
  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  if ((UIP_IP_BUF->srcipaddr.u16[6] != uip_ds6_if.addr_list[0].ipaddr.u16[6]) && \
-      (UIP_IP_BUF->destipaddr.u16[6]==uip_ds6_if.addr_list[0].ipaddr.u16[6]) && \
+  if ((UIP_IP_BUF->destipaddr.u16[6]==uip_ds6_if.addr_list[0].ipaddr.u16[6]) && \
       (UIP_IP_BUF->destipaddr.u16[7]==uip_ds6_if.addr_list[0].ipaddr.u16[7])){
     remove_ext_hdr();
     PRINTF("src=");
@@ -1452,22 +1451,27 @@ uip_process(uint8_t flag)
 
 #elif COMMON_DEVICE
   if (device_type_seting==TARGET_TYPE){
-    for(i = 0; i < UIP_DS6_ADDR_NB; i++) {
-      if ((UIP_IP_BUF->srcipaddr.u16[6] != uip_ds6_if.addr_list[i].ipaddr.u16[6]) && \
-          (UIP_IP_BUF->destipaddr.u16[6]==uip_ds6_if.addr_list[i].ipaddr.u16[6]) && \
-          (UIP_IP_BUF->destipaddr.u16[7]==uip_ds6_if.addr_list[i].ipaddr.u16[7])){
-        remove_ext_hdr();
-        PRINTF("src=");
-        PRINT6ADDR(&UIP_IP_BUF->srcipaddr);
-        PRINTF("dst=");
-        PRINT6ADDR(&UIP_IP_BUF->destipaddr);
-        UIP_IP_BUF->proto = UIP_PROTO_ICMP6;
-        PRINTF("proto%u",UIP_IP_BUF->proto);
-        PRINTF("\n");
-        slip_send();
-        leds_toggle(LEDS_ORANGE);
-        goto drop;                                                          
+    if ((uip_ipaddr_prefixcmp(&UIP_IP_BUF->srcipaddr, &inside_prefix, 48))&&
+        (uip_ipaddr_prefixcmp(&UIP_IP_BUF->destipaddr, &inside_prefix, 64))){
+      for(i = 0; i < UIP_DS6_ADDR_NB; i++) {
+        if ((UIP_IP_BUF->destipaddr.u16[6]==uip_ds6_if.addr_list[i].ipaddr.u16[6])&&
+            (UIP_IP_BUF->destipaddr.u16[7]==uip_ds6_if.addr_list[i].ipaddr.u16[7])){
+          remove_ext_hdr();
+          PRINTF("src=");
+          PRINT6ADDR(&UIP_IP_BUF->srcipaddr);
+          PRINTF("dst=");
+          PRINT6ADDR(&UIP_IP_BUF->destipaddr);
+          UIP_IP_BUF->proto = UIP_PROTO_ICMP6;
+          PRINTF("proto%u",UIP_IP_BUF->proto);
+          PRINTF("\n");
+          slip_send();
+          leds_toggle(LEDS_ORANGE);
+          goto drop;                                                          
+        }
       }
+    }else{
+      PRINTF("prefix");
+      PRINT6ADDR(&inside_prefix);
     }
   }
   PRINTF("device_type_seting%u",device_type_seting);
@@ -1515,8 +1519,7 @@ uip_process(uint8_t flag)
   remove_ext_hdr();
 #if TARGET
  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  if ((UIP_IP_BUF->srcipaddr.u16[6] != uip_ds6_if.addr_list[0].ipaddr.u16[6]) && \
-      (UIP_IP_BUF->destipaddr.u16[6]==uip_ds6_if.addr_list[0].ipaddr.u16[6]) && \
+  if ((UIP_IP_BUF->destipaddr.u16[6]==uip_ds6_if.addr_list[0].ipaddr.u16[6]) && \
       (UIP_IP_BUF->destipaddr.u16[7]==uip_ds6_if.addr_list[0].ipaddr.u16[7])){
     PRINTF("src=");
     PRINT6ADDR(&UIP_IP_BUF->srcipaddr);
@@ -1535,20 +1538,22 @@ uip_process(uint8_t flag)
 
 #elif COMMON_DEVICE
   if (device_type_seting==TARGET_TYPE){
-    for(i = 0; i < UIP_DS6_ADDR_NB; i++) {
-      if ((UIP_IP_BUF->srcipaddr.u16[6] != uip_ds6_if.addr_list[i].ipaddr.u16[6]) && \
-          (UIP_IP_BUF->destipaddr.u16[6]==uip_ds6_if.addr_list[i].ipaddr.u16[6]) && \
-          (UIP_IP_BUF->destipaddr.u16[7]==uip_ds6_if.addr_list[i].ipaddr.u16[7])){
-        PRINTF("src=");
-        PRINT6ADDR(&UIP_IP_BUF->srcipaddr);
-        PRINTF("dst=");
-        PRINT6ADDR(&UIP_IP_BUF->destipaddr);
-        UIP_IP_BUF->proto = UIP_PROTO_UDP;
-        PRINTF("proto%u",UIP_IP_BUF->proto);
-        PRINTF("\n");
-        slip_send();
-        leds_toggle(LEDS_ORANGE);
-        goto drop;                                                          
+    if ((uip_ipaddr_prefixcmp(&UIP_IP_BUF->srcipaddr, &inside_prefix, 48))&&
+        (uip_ipaddr_prefixcmp(&UIP_IP_BUF->destipaddr, &inside_prefix, 64))){
+      for(i = 0; i < UIP_DS6_ADDR_NB; i++) {
+        if ((UIP_IP_BUF->destipaddr.u16[6]==uip_ds6_if.addr_list[i].ipaddr.u16[6])&&
+            (UIP_IP_BUF->destipaddr.u16[7]==uip_ds6_if.addr_list[i].ipaddr.u16[7])){
+          PRINTF("src=");
+          PRINT6ADDR(&UIP_IP_BUF->srcipaddr);
+          PRINTF("dst=");
+          PRINT6ADDR(&UIP_IP_BUF->destipaddr);
+          UIP_IP_BUF->proto = UIP_PROTO_UDP;
+          PRINTF("proto%u",UIP_IP_BUF->proto);
+          PRINTF("\n");
+          slip_send();
+          leds_toggle(LEDS_ORANGE);
+          goto drop;                                                          
+        }
       }
     }
   }
@@ -1689,8 +1694,7 @@ uip_process(uint8_t flag)
   }
 #if TARGET
  //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  if ((UIP_IP_BUF->srcipaddr.u16[6] != uip_ds6_if.addr_list[0].ipaddr.u16[6]) && \
-      (UIP_IP_BUF->destipaddr.u16[6]==uip_ds6_if.addr_list[0].ipaddr.u16[6]) && \
+  if ((UIP_IP_BUF->destipaddr.u16[6]==uip_ds6_if.addr_list[0].ipaddr.u16[6]) && \
       (UIP_IP_BUF->destipaddr.u16[7]==uip_ds6_if.addr_list[0].ipaddr.u16[7])){
     PRINTF("src=");
     PRINT6ADDR(&UIP_IP_BUF->srcipaddr);
@@ -1707,20 +1711,22 @@ uip_process(uint8_t flag)
   }
 #elif COMMON_DEVICE
   if (device_type_seting==TARGET_TYPE){
-    for(i = 0; i < UIP_DS6_ADDR_NB; i++) {
-      if ((UIP_IP_BUF->srcipaddr.u16[6] != uip_ds6_if.addr_list[i].ipaddr.u16[6]) && \
-          (UIP_IP_BUF->destipaddr.u16[6]==uip_ds6_if.addr_list[i].ipaddr.u16[6]) && \
-          (UIP_IP_BUF->destipaddr.u16[7]==uip_ds6_if.addr_list[i].ipaddr.u16[7])){
-        PRINTF("src=");
-        PRINT6ADDR(&UIP_IP_BUF->srcipaddr);
-        PRINTF("dst=");
-        PRINT6ADDR(&UIP_IP_BUF->destipaddr);
-        UIP_IP_BUF->proto = UIP_PROTO_TCP;
-        PRINTF("proto%u",UIP_IP_BUF->proto);
-        PRINTF("\n");
-        slip_send();
-        leds_toggle(LEDS_ORANGE);
-        goto drop;                                                          
+    if ((uip_ipaddr_prefixcmp(&UIP_IP_BUF->srcipaddr, &inside_prefix, 48))&&
+        (uip_ipaddr_prefixcmp(&UIP_IP_BUF->destipaddr, &inside_prefix, 64))){
+      for(i = 0; i < UIP_DS6_ADDR_NB; i++) {
+        if ((UIP_IP_BUF->destipaddr.u16[6]==uip_ds6_if.addr_list[i].ipaddr.u16[6])&&
+            (UIP_IP_BUF->destipaddr.u16[7]==uip_ds6_if.addr_list[i].ipaddr.u16[7])){
+          PRINTF("prefix");
+          PRINT6ADDR(&inside_prefix);
+          PRINTF("dst=");
+          PRINT6ADDR(&UIP_IP_BUF->destipaddr);
+          UIP_IP_BUF->proto = UIP_PROTO_TCP;
+          PRINTF("proto%u",UIP_IP_BUF->proto);
+          PRINTF("\n");
+          slip_send();
+          leds_toggle(LEDS_ORANGE);
+          goto drop;
+        }
       }
     }
   }

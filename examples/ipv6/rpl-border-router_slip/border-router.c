@@ -52,7 +52,7 @@
 #include <string.h>
 #include <ctype.h>
 
-//#define DEBUG DEBUG_PRINT
+#define DEBUG DEBUG_NONE
 #include "net/ip/uip-debug.h"
 
 static uip_ipaddr_t prefix;
@@ -352,7 +352,7 @@ PROCESS_THREAD(border_router_process, ev, data)
   NETSTACK_MAC.off(0);
 
   PROCESS_PAUSE();
-
+//  slip_arch_init(115200*4);
 //  SENSORS_ACTIVATE(button_sensor);
 
 

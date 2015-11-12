@@ -190,12 +190,12 @@ In file included from ../../../platform/cc2538dk/./contiki-conf.h:283:0,
 /usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/ipv6/uip6.c
 ../../../core/net/ipv6/uip6.c: In function 'uip_process':
-../../../core/net/ipv6/uip6.c:1467:9: warning: implicit declaration of function 'slip_send' [-Wimplicit-function-declaration]
-         slip_send();
-         ^
-../../../core/net/ipv6/uip6.c:1468:9: warning: implicit declaration of function 'leds_toggle' [-Wimplicit-function-declaration]
-         leds_toggle(LEDS_ORANGE);
-         ^
+../../../core/net/ipv6/uip6.c:1467:11: warning: implicit declaration of function 'slip_send' [-Wimplicit-function-declaration]
+           slip_send();
+           ^
+../../../core/net/ipv6/uip6.c:1468:11: warning: implicit declaration of function 'leds_toggle' [-Wimplicit-function-declaration]
+           leds_toggle(LEDS_ORANGE);
+           ^
 /usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/ip/dhcpc.c
 /usr/bin/sh: /usr/bin/sed: Permission denied
@@ -298,13 +298,13 @@ border-router.c:59:22: warning: 'et' defined but not used [-Wunused-variable]
                       ^
   CC        slip-bridge.c
 slip-bridge.c: In function 'slip_input_callback':
-slip-bridge.c:133:9: warning: implicit declaration of function 'watchdog_reboot' [-Wimplicit-function-declaration]
+slip-bridge.c:132:9: warning: implicit declaration of function 'watchdog_reboot' [-Wimplicit-function-declaration]
          watchdog_reboot();
          ^
-slip-bridge.c:135:9: warning: implicit declaration of function 'leds_on' [-Wimplicit-function-declaration]
+slip-bridge.c:134:9: warning: implicit declaration of function 'leds_on' [-Wimplicit-function-declaration]
          leds_on(LEDS_RED);
          ^
-slip-bridge.c:163:3: warning: pointer targets in passing argument 1 of 'strncmp' differ in signedness [-Wpointer-sign]
+slip-bridge.c:162:3: warning: pointer targets in passing argument 1 of 'strncmp' differ in signedness [-Wpointer-sign]
    }else if(strncmp(uip_buf, "AdressRouter", 12) == 0) {
    ^
 In file included from c:\yagarto\arm-none-eabi\include\string.h:10:0,
@@ -315,7 +315,7 @@ In file included from c:\yagarto\arm-none-eabi\include\string.h:10:0,
 c:\yagarto\arm-none-eabi\include\string.h:35:6: note: expected 'const char *' but argument is of type 'uint8_t *'
  int  _EXFUN(strncmp,(const char *, const char *, size_t));
       ^
-slip-bridge.c:179:3: warning: pointer targets in passing argument 1 of 'strncmp' differ in signedness [-Wpointer-sign]
+slip-bridge.c:178:3: warning: pointer targets in passing argument 1 of 'strncmp' differ in signedness [-Wpointer-sign]
    }else if (strncmp(uip_buf, "AdressTarget", 12) == 0){
    ^
 In file included from c:\yagarto\arm-none-eabi\include\string.h:10:0,
@@ -326,7 +326,7 @@ In file included from c:\yagarto\arm-none-eabi\include\string.h:10:0,
 c:\yagarto\arm-none-eabi\include\string.h:35:6: note: expected 'const char *' but argument is of type 'uint8_t *'
  int  _EXFUN(strncmp,(const char *, const char *, size_t));
       ^
-slip-bridge.c:242:5: warning: implicit declaration of function 'leds_toggle' [-Wimplicit-function-declaration]
+slip-bridge.c:248:5: warning: implicit declaration of function 'leds_toggle' [-Wimplicit-function-declaration]
      leds_toggle(LEDS_YELLOW);
      ^
 /usr/bin/sh: /usr/bin/sed: Permission denied
