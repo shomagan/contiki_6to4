@@ -56,7 +56,7 @@
 #define NETSTACK_CONF_RDC     nullrdc_driver
 //#define NETSTACK_CONF_RDC         cxmac_driver
 
-#define NETSTACK_CONF_RDC_CHANNEL_CHECK_RATE 128
+#define NETSTACK_CONF_RDC_CHANNEL_CHECK_RATE 64
 
 #define NETSTACK_CONF_FRAMER  framer_802154
 
