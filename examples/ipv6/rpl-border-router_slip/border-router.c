@@ -42,7 +42,7 @@
 #include "net/ip/uip.h"
 #include "net/ipv6/uip-ds6.h"
 #include "net/rpl/rpl.h"
-
+#include "net/ipv6/sicslowpan.h"
 #include "net/netstack.h"
 #include "dev/button-sensor.h"
 #include "dev/slip.h"
@@ -61,7 +61,7 @@ uint8_t time_blink;
 uint8_t device_type_seting;
 #define ROUTER_TYPE 1
 #define TARGET_TYPE 2
-
+static int def_rt_rssi = 0;
 PROCESS(border_router_process, "Border router process");
 
 #if WEBSERVER==0
@@ -261,7 +261,11 @@ PT_THREAD(generate_routes(struct httpd_state *s))
 #else
     blen = 0;
 #endif
-  }
+    }
+  def_rt_rssi = sicslowpan_get_last_rssi();
+  ADD("%i RSSI\n", def_rt_rssi);
+  ADD("%d Radio_channel\n", CC2538_RF_CONF_CHANNEL);
+
   ADD("</pre>");
 
 #if WEBSERVER_CONF_FILESTATS

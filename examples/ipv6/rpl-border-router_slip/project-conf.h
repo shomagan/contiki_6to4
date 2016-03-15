@@ -60,7 +60,7 @@
 
 #define NETSTACK_CONF_FRAMER  framer_802154
 
-#define CC2538_RF_CONF_CHANNEL              26
+#define CC2538_RF_CONF_CHANNEL              15
 
 #define COMMON_DEVICE 1
 
