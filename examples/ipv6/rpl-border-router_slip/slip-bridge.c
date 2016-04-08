@@ -42,13 +42,85 @@
 #include "net/ipv6/uip-ds6.h"
 #include "dev/slip.h"
 #include "dev/uart1.h"
+#include "dev/radio.h"
 #include <string.h>
+#include "dev/rfcore.h"
 
 #define UIP_IP_BUF        ((struct uip_ip_hdr *)&uip_buf[UIP_LLH_LEN])
 
 #define DEBUG DEBUG_NONE
 //#define PRINTF printf
 #include "net/ip/uip-debug.h"
+typedef struct output_config {
+  radio_value_t power;
+  uint8_t txpower_val;
+} output_config_t;
+
+static const output_config_t output_power_cc2592[] = {
+  { 22, 0xFF },
+  {  21.5, 0xED },
+  {  20.9, 0xD5 },
+  {  20.1, 0xC5 },
+  {  19.6, 0xB6 },
+  { 19, 0xB0 },
+  { 17.8, 0xA1 },
+  { 16.4, 0x91 },
+  { 14.9, 0x88 },
+  { 13, 0x72 },
+  { 11, 0x62 },
+  { 9.5, 0x58 },
+  { 7.5, 0x42 },
+};
+#define OUTPUT_CONFIG_COUNT_CC2592 (sizeof(output_power_cc2592) / sizeof(output_config_t))
+
+/* Max and Min Output Power in dBm */
+#define OUTPUT_POWER_MIN_CC2592    (output_power_cc2592[OUTPUT_CONFIG_COUNT_CC2592 - 1].power)
+#define OUTPUT_POWER_MAX_CC2592    (output_power_cc2592[0].power)
+
+/*---------------------------------------------------------------------------*/
+/* Returns the current TX power in dBm */
+radio_value_t
+get_tx_power_cc2592(void)
+{
+  int i;
+  uint8_t reg_val = REG(RFCORE_XREG_TXPOWER) & 0xFF;
+
+  /*
+   * Find the TXPOWER value in the lookup table
+   * If the value has been written with set_tx_power, we should be able to
+   * find the exact value. However, in case the register has been written in
+   * a different fashion, we return the immediately lower value of the lookup
+   */
+  for(i = 0; i < OUTPUT_CONFIG_COUNT_CC2592; i++) {
+    if(reg_val >= output_power_cc2592[i].txpower_val) {
+      return output_power_cc2592[i].power;
+    }
+  }
+  return OUTPUT_POWER_MIN_CC2592;
+}
+
+/*---------------------------------------------------------------------------*/
+/*
+ * Set TX power to 'at least' power dBm
+ * This works with a lookup table. If the value of 'power' does not exist in
+ * the lookup table, TXPOWER will be set to the immediately higher available
+ * value
+ */
+static void
+set_tx_power_cc2592(radio_value_t power)
+{
+  int i;
+  uint8_t reg_val = REG(RFCORE_XREG_TXPOWER) & 0xFF;
+
+  for(i = OUTPUT_CONFIG_COUNT_CC2592 - 1; i >= 0; --i) {
+    if(power <= output_power_cc2592[i].power) {
+      if (reg_val!=output_power_cc2592[i].txpower_val){
+        REG(RFCORE_XREG_TXPOWER) = output_power_cc2592[i].txpower_val;}
+      return;
+    }
+  }
+}
+
 
 void set_prefix_64(uip_ipaddr_t *);
 uip_ipaddr_t inside_prefix;
@@ -242,6 +314,23 @@ slip_input_callback(void)
         time_blink =1;
       }
     }
+  }else if((uip_buf[0] == '!')&&(uip_buf[1] == 'T')){
+    radio_value_t power;  //power in dbm with cc2592 chip
+    chek_summ =chksum(chek_summ,(uint8_t*)uip_buf,3);
+    chek_summ_recv = uip_buf[3];
+    chek_summ_recv |= ((uint16_t)uip_buf[4])<<8;
+    if (chek_summ_recv==chek_summ){
+      PRINTF("set transmission power %c\n", uip_buf[2]);
+      power = uip_buf[2];
+      set_tx_power_cc2592(power);
+      power = get_tx_power_cc2592();
+      chek_summ =chksum(chek_summ,(uint8_t*)uip_buf,3);
+      uip_buf[3] = chek_summ_recv;
+      uip_buf[4] = chek_summ_recv>>8;
+      uip_len = 5;
+      slip_send();
+    }
+    uip_clear_buf();
   }else{
   /* Save the last sender received over SLIP to avoid bouncing the
      packet back if no route is found */

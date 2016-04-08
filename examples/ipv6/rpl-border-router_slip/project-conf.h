@@ -66,6 +66,8 @@
 
 #define ROUTER_TYPE 1
 #define TARGET_TYPE 2
+typedef int  radio_value_t;
+extern radio_value_t get_tx_power_cc2592(void);
 
 extern uint8_t device_type_seting;
 extern uint8_t time_blink;

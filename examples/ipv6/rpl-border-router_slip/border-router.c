@@ -265,6 +265,9 @@ PT_THREAD(generate_routes(struct httpd_state *s))
   def_rt_rssi = sicslowpan_get_last_rssi();
   ADD("%i RSSI\n", def_rt_rssi);
   ADD("%d Radio_channel\n", CC2538_RF_CONF_CHANNEL);
+  int power;  //power in dbm with cc2592 chip
+  power = get_tx_power_cc2592();
+  ADD("%i transmition_power\n", power);
 
   ADD("</pre>");
 
@@ -323,6 +326,18 @@ request_prefix(void)
   uip_clear_buf();
 }
 /*---------------------------------------------------------------------------*/
+static void
+request_power(void)
+{
+  /* mess up uip_buf with a dirty request... */
+  uip_buf[0] = '?';
+  uip_buf[1] = 'T';
+  uip_len = 2;
+  slip_send();
+  uip_clear_buf();
+}
+
+/*---------------------------------------------------------------------------*/
 void
 set_prefix_64(uip_ipaddr_t *prefix_64)
 {
@@ -374,7 +389,7 @@ PROCESS_THREAD(border_router_process, ev, data)
     request_prefix();
     PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
   }
-
+  request_power();
   /* Now turn the radio on, but disable radio duty cycling.
    * Since we are the DAG root, reception delays would constrain mesh throughbut.
    */
