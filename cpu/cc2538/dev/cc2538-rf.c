@@ -163,7 +163,7 @@ PROCESS(cc2538_rf_process, "cc2538 RF driver");
  * \brief Get the current operating channel
  * \return Returns a value in [11,26] representing the current channel
  */
-static uint8_t
+uint8_t
 get_channel()
 {
   uint8_t chan = REG(RFCORE_XREG_FREQCTRL) & RFCORE_XREG_FREQCTRL_FREQ;
@@ -178,7 +178,7 @@ get_channel()
  * \return Returns a value in [11,26] representing the current channel
  *         or a negative value if \e channel was out of bounds
  */
-static int8_t
+int8_t
 set_channel(uint8_t channel)
 {
   uint8_t was_on = 0;

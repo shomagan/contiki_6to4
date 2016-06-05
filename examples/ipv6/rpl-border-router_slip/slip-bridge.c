@@ -216,20 +216,20 @@ slip_input_callback(void)
       }
     }
     uip_clear_buf();
-  } else if (uip_buf[0] == '?') {
+  } else if ((uip_buf[0] == '?') && (uip_buf[1] == 'M')) {
     PRINTF("Got request message of type %c\n", uip_buf[1]);
-    if(uip_buf[1] == 'M') {
-      char* hexchar = "0123456789abcdef";
-      int j;
-      /* this is just a test so far... just to see if it works */
-      uip_buf[0] = '!';
-      for(j = 0; j < 8; j++) {
-        uip_buf[2 + j * 2] = hexchar[uip_lladdr.addr[j] >> 4];
-        uip_buf[3 + j * 2] = hexchar[uip_lladdr.addr[j] & 15];
-      }
-      uip_len = 18;
-      slip_send();
+
+    char* hexchar = "0123456789abcdef";
+    int j;
+    /* this is just a test so far... just to see if it works */
+    uip_buf[0] = '!';
+    for(j = 0; j < 8; j++) {
+      uip_buf[2 + j * 2] = hexchar[uip_lladdr.addr[j] >> 4];
+      uip_buf[3 + j * 2] = hexchar[uip_lladdr.addr[j] & 15];
     }
+    uip_len = 18;
+    slip_send();
+
     uip_clear_buf();
   }else if(strncmp(uip_buf, "AdressRouter", 12) == 0) {
     if (device_type_seting == TARGET_TYPE){
@@ -324,6 +324,21 @@ slip_input_callback(void)
       power = uip_buf[2];
       set_tx_power_cc2592(power);
       power = get_tx_power_cc2592();
+      chek_summ =chksum(chek_summ,(uint8_t*)uip_buf,3);
+      uip_buf[3] = chek_summ_recv;
+      uip_buf[4] = chek_summ_recv>>8;
+      uip_len = 5;
+      slip_send();
+    }
+    uip_clear_buf();
+  }else if((uip_buf[0] == '!')&&(uip_buf[1] == 'C')){
+    chek_summ =chksum(chek_summ,(uint8_t*)uip_buf,3);
+    chek_summ_recv = uip_buf[3];
+    chek_summ_recv |= ((uint16_t)uip_buf[4])<<8;
+    if (chek_summ_recv==chek_summ){
+      PRINTF("set channel %c\n", uip_buf[2]);
+      set_channel(uip_buf[2]) ;// range [11,26]
+      uip_buf[2] = get_channel();
       chek_summ =chksum(chek_summ,(uint8_t*)uip_buf,3);
       uip_buf[3] = chek_summ_recv;
       uip_buf[4] = chek_summ_recv>>8;

@@ -150,6 +150,7 @@ PT_THREAD(generate_routes(struct httpd_state *s))
 {
   static uip_ds6_route_t *r;
   static uip_ds6_nbr_t *nbr;
+  uint8_t channel_temp;
 #if BUF_USES_STACK
   char buf[256];
 #endif
@@ -261,10 +262,12 @@ PT_THREAD(generate_routes(struct httpd_state *s))
 #else
     blen = 0;
 #endif
-    }
+  }
+
   def_rt_rssi = sicslowpan_get_last_rssi();
   ADD("%i RSSI\n", def_rt_rssi);
-  ADD("%d Radio_channel\n", CC2538_RF_CONF_CHANNEL);
+  channel_temp = get_channel();
+  ADD("%d Radio_channel\n", channel_temp);
   int power;  //power in dbm with cc2592 chip
   power = get_tx_power_cc2592();
   ADD("%i transmition_power\n", power);
