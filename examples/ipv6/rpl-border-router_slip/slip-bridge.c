@@ -324,13 +324,12 @@ slip_input_callback(void)
       power = uip_buf[2];
       set_tx_power_cc2592(power);
       power = get_tx_power_cc2592();
-      chek_summ =chksum(chek_summ,(uint8_t*)uip_buf,3);
       uip_buf[3] = chek_summ_recv;
       uip_buf[4] = chek_summ_recv>>8;
       uip_len = 5;
       slip_send();
+      uip_clear_buf();
     }
-    uip_clear_buf();
   }else if((uip_buf[0] == '!')&&(uip_buf[1] == 'C')){
     chek_summ =chksum(chek_summ,(uint8_t*)uip_buf,3);
     chek_summ_recv = uip_buf[3];
@@ -339,18 +338,42 @@ slip_input_callback(void)
       PRINTF("set channel %c\n", uip_buf[2]);
       set_channel(uip_buf[2]) ;// range [11,26]
       uip_buf[2] = get_channel();
-      chek_summ =chksum(chek_summ,(uint8_t*)uip_buf,3);
       uip_buf[3] = chek_summ_recv;
       uip_buf[4] = chek_summ_recv>>8;
       uip_len = 5;
       slip_send();
+      uip_clear_buf();
     }
+
+  } else if ((uip_buf[0] == '?') && (uip_buf[1] == 'R') && (uip_buf[2] == 'P')) {
+  //  PRINTF("Got request message of param %c %c\n", uip_buf[1], uip_buf[2]);
+    signed short def_rt_rssi;
+    unsigned short def_rt_rssi_abs;
+    int j;
+    /* this is just a test so far... just to see if it works */
+    uip_buf[0] = '!';
+    uip_buf[1] = 'R';
+    uip_buf[2] = 'P';
+
+    def_rt_rssi = (signed short)sicslowpan_get_last_rssi();
+    def_rt_rssi_abs = abs(def_rt_rssi);
+
+    uip_buf[3] = (uint8_t)def_rt_rssi_abs;
+    uip_buf[4] = (uint8_t)(def_rt_rssi_abs>>8);
+    chek_summ =chksum(0,(uint8_t*)uip_buf,5);
+
+    uip_buf[5] = chek_summ;
+    uip_buf[6] = chek_summ>>8;
+
+    uip_len = 7;
+    slip_send();
+
     uip_clear_buf();
   }else{
   /* Save the last sender received over SLIP to avoid bouncing the
      packet back if no route is found */
     leds_toggle(LEDS_YELLOW);
-    uip_ipaddr_copy(&last_sender, &UIP_IP_BUF->srcipaddr);
+//    uip_ipaddr_copy(&last_sender, &UIP_IP_BUF->srcipaddr);
   }
 }
 /*---------------------------------------------------------------------------*/
@@ -368,13 +391,14 @@ output(void)
   if(uip_ipaddr_cmp(&last_sender, &UIP_IP_BUF->srcipaddr)) {
     /* Do not bounce packets back over SLIP if the packet was received
        over SLIP */
-    PRINTF("slip-bridge: Destination off-link but no route src=");
+/*    PRINTF("slip-bridge: Destination off-link but no route src=");
     PRINT6ADDR(&UIP_IP_BUF->srcipaddr);
     PRINTF(" dst=");
     PRINT6ADDR(&UIP_IP_BUF->destipaddr);
-    PRINTF("\n");
+    PRINTF("\n");*/
+    slip_send();
   } else {
-    PRINTF("SUT: %u\n", uip_len);
+//    PRINTF("SUT: %u\n", uip_len);
     slip_send();
   }
   return 0;
