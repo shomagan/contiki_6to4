@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2010, Swedish Institute of Computer Science.
+
+ * Copyright (c) 2015, Swedish Institute of Computer Science.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,31 +26,48 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- *
  */
 
+#ifndef PROJECT_CONF_H_
+#define PROJECT_CONF_H_
 
-#ifndef QUEUEBUF_CONF_NUM
-#define QUEUEBUF_CONF_NUM          10
-#endif
+#ifndef WITH_NON_STORING
+#define WITH_NON_STORING 0 /* Set this to run with non-storing mode */
+#endif /* WITH_NON_STORING */
 
-#ifndef UIP_CONF_BUFFER_SIZE
-#define UIP_CONF_BUFFER_SIZE    512
-#endif
+#undef NBR_TABLE_CONF_MAX_NEIGHBORS
+#undef UIP_CONF_MAX_ROUTES
 
-#ifndef UIP_CONF_RECEIVE_WINDOW
-#define UIP_CONF_RECEIVE_WINDOW  512
-#endif
+#ifdef TEST_MORE_ROUTES
+/* configure number of neighbors and routes */
+#define NBR_TABLE_CONF_MAX_NEIGHBORS     10
+#define UIP_CONF_MAX_ROUTES   30
+#else
+/* configure number of neighbors and routes */
+#define NBR_TABLE_CONF_MAX_NEIGHBORS     10
+#define UIP_CONF_MAX_ROUTES   10
+#endif /* TEST_MORE_ROUTES */
 
-#define UIP_CONF_TCP_MSS 256
-
+#undef NETSTACK_CONF_RDC
 #define NETSTACK_CONF_RDC     nullrdc_driver
+#undef NULLRDC_CONF_802154_AUTOACK
+#define NULLRDC_CONF_802154_AUTOACK       1
 
-#define NETSTACK_CONF_FRAMER  framer_802154
+/* Define as minutes */
+#define RPL_CONF_DEFAULT_LIFETIME_UNIT   60
 
-//#define SICSLOWPAN_CONF_FRAG                 0
+/* 10 minutes lifetime of routes */
+#define RPL_CONF_DEFAULT_LIFETIME        10
 
-#define TARGET 1
+#define RPL_CONF_DEFAULT_ROUTE_INFINITE_LIFETIME 1
 
-//#define DEBUG DEBUG_PRINT
+#if WITH_NON_STORING
+#undef RPL_NS_CONF_LINK_NUM
+#define RPL_NS_CONF_LINK_NUM 40 /* Number of links maintained at the root. Can be set to 0 at non-root nodes. */
+#undef UIP_CONF_MAX_ROUTES
+#define UIP_CONF_MAX_ROUTES 0 /* No need for routes */
+#undef RPL_CONF_MOP
+#define RPL_CONF_MOP RPL_MOP_NON_STORING /* Mode of operation*/
+#endif /* WITH_NON_STORING */
 
+#endif
