@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, Swedish Institute of Computer Science.
+ * Copyright (c) 2015, Swedish Institute of Computer Science.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,8 +25,28 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
- *
  */
+#ifndef PROJECT_CONF_H_
+#define PROJECT_CONF_H_
+
+#undef NETSTACK_CONF_RDC
+#define NETSTACK_CONF_RDC     nullrdc_driver
+#undef NULLRDC_CONF_802154_AUTOACK
+#define NULLRDC_CONF_802154_AUTOACK       1
+
+#undef UIP_CONF_MAX_ROUTES
+#define UIP_CONF_MAX_ROUTES   20
+#undef NBR_TABLE_CONF_MAX_NEIGHBORS
+#define NBR_TABLE_CONF_MAX_NEIGHBORS     10
+
+/* 10 minutes lifetime of routes */
+#define RPL_CONF_DEFAULT_LIFETIME        10
+
+#define RPL_CONF_DEFAULT_ROUTE_INFINITE_LIFETIME 1
+
+#ifndef WITH_NON_STORING
+#define WITH_NON_STORING 0 /* Set this to run with non-storing mode */
+#endif /* WITH_NON_STORING */
 
 
 #ifndef QUEUEBUF_CONF_NUM
@@ -43,13 +63,10 @@
 
 #define UIP_CONF_TCP_MSS 256
 
-#define NETSTACK_CONF_RDC     nullrdc_driver
-
 #define NETSTACK_CONF_FRAMER  framer_802154
 
 //#define SICSLOWPAN_CONF_FRAG                 0
 
 #define TARGET 1
 
-//#define DEBUG DEBUG_PRINT
-
+#endif
