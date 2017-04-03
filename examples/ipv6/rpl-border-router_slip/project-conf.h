@@ -60,9 +60,6 @@
 
 #define NETSTACK_CONF_FRAMER  framer_802154
 
-#undef ROUTE_CONF_DEFAULT_LIFETIME
-#define ROUTE_CONF_DEFAULT_LIFETIME          300
-
 
 #define CC2538_RF_CONF_CHANNEL              26  //default setting, get from mega12 after init
 
