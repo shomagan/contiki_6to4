@@ -162,8 +162,7 @@ print_local_addresses(void)
 {
   int i;
   uint8_t state;
-  PRINTF("UIP_DS6_ADDR_NB %u",UIP_DS6_ADDR_NB);  
-  PRINTF("Client IPv6 addresses: ");
+  PRINTF("Client IPv6 addresses: \n");
   for(i = 0; i < UIP_DS6_ADDR_NB; i++) {
     state = uip_ds6_if.addr_list[i].state;
     if(uip_ds6_if.addr_list[i].isused &&
@@ -172,7 +171,7 @@ print_local_addresses(void)
       PRINTF("\n");
       /* hack to make address "final" */
       if (state == ADDR_TENTATIVE) {
-	uip_ds6_if.addr_list[i].state = ADDR_PREFERRED;
+      	uip_ds6_if.addr_list[i].state = ADDR_PREFERRED;
       }
     }
   }
@@ -189,6 +188,8 @@ slip_input_callback(void)
   unsigned char i,j;
   unsigned short chek_summ,chek_summ_recv;
   uip_ds6_addr_t *ds6_addr_t;
+  uip_ds6_aaddr_t **ip_address;
+  static uip_ipaddr_t own_ipaddr;
 
   chek_summ =0;
  // PRINTF("SIN: %u\n", uip_len);
@@ -231,7 +232,7 @@ slip_input_callback(void)
     slip_send();
 
     uip_clear_buf();
-  }else if(strncmp(uip_buf, "AdressRouter", 12) == 0) {
+  }else if(strncmp(uip_buf, "AdressRouter", 12) == 0){
     if (device_type_seting == TARGET_TYPE){
       device_type_seting=0;
       watchdog_reboot();
@@ -260,8 +261,11 @@ slip_input_callback(void)
         //set new IPv6 addres
         uip_ipaddr_t ipaddr;
         uip_lladdr_t lladdr;
-
-        memset(&inside_prefix, 0, 16);
+        unsigned char finded,not_first,number;
+        finded=0;
+        not_first=0;
+        memcpy(&own_ipaddr, &uip_buf[12], 8);
+        memcpy(&ipaddr, &uip_buf[12], 8);
         memcpy(&inside_prefix, &uip_buf[12], 8);
         lladdr.addr[0] = uip_buf[20];
     		lladdr.addr[1] = uip_buf[21];
@@ -271,42 +275,42 @@ slip_input_callback(void)
         lladdr.addr[5] = uip_buf[25];
         lladdr.addr[6] = uip_buf[26];
         lladdr.addr[7] = uip_buf[27];
-        if (device_type_seting==0){
-/*          uip_ip6addr(&ipaddr, 0x2001, 0x0db8, 0, 0x0212, 0, 0, 0, 0);
-          uip_ds6_set_addr_iid(&ipaddr, &lladdr);
-          uip_ds6_addr_add(&ipaddr, 0, ADDR_MANUAL);  */
-
-          uip_ip6addr(&ipaddr, 0xaaaa, 0, 0, 0, 0, 0, 0, 0);
-          uip_ds6_set_addr_iid(&ipaddr, &uip_lladdr);
-          uip_ds6_addr_add(&ipaddr, 0, ADDR_AUTOCONF);
-        }
-        for(j = 0; j < UIP_DS6_ADDR_NB; j++) {
-          for (i=0;i<4;i++){
-            if (uip_buf[24+i]!= uip_ds6_if.addr_list[j].ipaddr.u8[12+i])
-              break;
-          }
-          if (i==4)
+  			uip_ds6_set_addr_iid(&inside_prefix,&lladdr);
+        for (i=0;i<UIP_DS6_ADDR_NB;i++){
+          if(uip_ipaddr_prefixcmp(&uip_ds6_if.addr_list[i].ipaddr, &inside_prefix, 128)
+              && uip_ds6_if.addr_list[i].isused){
+            finded=i+1;
             break;
-          
-        }
-        if (j==UIP_DS6_ADDR_NB){
-          if (device_type_seting==TARGET_TYPE){
-            watchdog_reboot();
-          }else{
-            uip_ds6_addr_rm(&uip_ds6_if.addr_list[0]);
+          }else if(uip_ds6_if.addr_list[i].isused){
+            not_first=1;
           }
-          uip_ds6_set_addr_iid(&inside_prefix, &lladdr);
-          ds6_addr_t = uip_ds6_addr_add(&inside_prefix, 0, ADDR_AUTOCONF);
-          uip_buf[12] = ds6_addr_t->ipaddr.u8[12];
-          uip_buf[13] = ds6_addr_t->ipaddr.u8[13];
-          uip_buf[14] = ds6_addr_t->ipaddr.u8[14];
-          uip_buf[15] = ds6_addr_t->ipaddr.u8[15];
-          slip_write(uip_buf, 16);
-        }else{
+        }
+        if(finded){
+          PRINTF("FINDED SELF ADDRESS\n");
+          if(not_first){
+            PRINTF("SELF ADDRESS NOT FIRST\n");
+            print_local_addresses();
+            PRINT6ADDR(&inside_prefix);
+            for(i=0;i<(finded-1);i++){
+              uip_ds6_addr_rm(&uip_ds6_if.addr_list[i]);
+            }
+            ds6_addr_t = uip_ds6_addr_add(&inside_prefix, 0, ADDR_AUTOCONF);
+          }else{
+            PRINTF("SELF ADDRESS FIRST\n");
+          }
           uip_buf[12] = lladdr.addr[4];
           uip_buf[13] = lladdr.addr[5];
           uip_buf[14] = lladdr.addr[6];
           uip_buf[15] = lladdr.addr[7];
+          slip_write(uip_buf, 16);
+        }else{
+          PRINTF("DON'T FINDED SELF ADDRESS\n");
+          PRINT6ADDR(&inside_prefix);
+	        ds6_addr_t = uip_ds6_addr_add(&inside_prefix, 0, ADDR_AUTOCONF);
+          uip_buf[12] = ds6_addr_t->ipaddr.u8[12];
+          uip_buf[13] = ds6_addr_t->ipaddr.u8[13];
+          uip_buf[14] = ds6_addr_t->ipaddr.u8[14];
+          uip_buf[15] = ds6_addr_t->ipaddr.u8[15];
           slip_write(uip_buf, 16);
         }
         print_local_addresses();
@@ -329,6 +333,70 @@ slip_input_callback(void)
       uip_len = 5;
       slip_send();
       uip_clear_buf();
+    }
+  }else if (strncmp(uip_buf, "Adress2Target", 13) == 0){
+    chek_summ =chksum(chek_summ,(uint8_t*)uip_buf,29);
+    chek_summ_recv = uip_buf[29];
+    chek_summ_recv |= ((uint16_t)uip_buf[30])<<8;
+    if (chek_summ_recv==chek_summ){
+      if (device_type_seting == ROUTER_TYPE){
+        device_type_seting=0;
+        watchdog_reboot();
+      }else{
+        
+        //set new IPv6 addres
+        uip_ipaddr_t ipaddr;
+        uip_lladdr_t lladdr;
+        memcpy(&ipaddr, &uip_buf[13], 8);
+        lladdr.addr[0] = uip_buf[21];
+    		lladdr.addr[1] = uip_buf[22];
+    		lladdr.addr[2] = uip_buf[23];
+    		lladdr.addr[3] = uip_buf[24];
+        lladdr.addr[4] = uip_buf[25];
+        lladdr.addr[5] = uip_buf[26];
+        lladdr.addr[6] = uip_buf[27];
+        lladdr.addr[7] = uip_buf[28];
+        uip_ds6_set_addr_iid(&ipaddr, &lladdr);
+        if(device_type_seting==TARGET_TYPE){
+          unsigned char finded;
+          finded = 0;
+          for (i=0;i<UIP_DS6_ADDR_NB;i++){
+            if(uip_ipaddr_prefixcmp(&uip_ds6_if.addr_list[i].ipaddr, &ipaddr, 128)
+                && uip_ds6_if.addr_list[i].isused){
+              finded=1;
+            }
+          }
+
+          if(finded==0) {
+            PRINTF("DON'T FINDED SECOND ADDRESS\n");
+            ds6_addr_t = uip_ds6_addr_add(&ipaddr, 0, ADDR_AUTOCONF);
+            uip_buf[13] = ds6_addr_t->ipaddr.u8[12];
+            uip_buf[14] = ds6_addr_t->ipaddr.u8[13];
+            uip_buf[15] = ds6_addr_t->ipaddr.u8[14];
+            uip_buf[16] = ds6_addr_t->ipaddr.u8[15];
+          }else{
+            PRINTF("FINDED SECOND ADDRESS\n");
+          }
+          if(uip_ipaddr_prefixcmp(&uip_ds6_if.addr_list[0].ipaddr, &inside_prefix, 128)) {
+            PRINTF("SELF ADDRESS FIRST\n");
+          }else{
+            PRINTF("SELF ADDRESS NOT FIRST\n");
+            for(i =1;i<UIP_DS6_ADDR_NB;i++){
+              if(uip_ipaddr_prefixcmp(&uip_ds6_if.addr_list[i].ipaddr, &inside_prefix, 128)){
+                uip_ds6_addr_rm(&uip_ds6_if.addr_list[i]);
+                break;
+              }
+            }
+            ds6_addr_t = uip_ds6_addr_add(&inside_prefix, 0, ADDR_AUTOCONF);
+          }
+          uip_buf[13] = lladdr.addr[4];
+          uip_buf[14] = lladdr.addr[5];
+          uip_buf[15] = lladdr.addr[6];
+          uip_buf[16] = lladdr.addr[7];
+          slip_write(uip_buf, 17);
+        }
+        print_local_addresses();
+      }
     }
   }else if((uip_buf[0] == '!')&&(uip_buf[1] == 'C')){
     chek_summ =chksum(chek_summ,(uint8_t*)uip_buf,3);

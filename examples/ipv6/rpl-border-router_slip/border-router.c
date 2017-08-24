@@ -54,9 +54,9 @@
 
 #define DEBUG DEBUG_NONE
 #include "net/ip/uip-debug.h"
-
+extern uip_ipaddr_t inside_prefix;
 static uip_ipaddr_t prefix;
-static struct etimer et;
+
 uint8_t time_blink;
 uint8_t device_type_seting;
 #define ROUTER_TYPE 1
@@ -409,6 +409,37 @@ PROCESS_THREAD(border_router_process, ev, data)
     if (device_type_seting){
 //          uip_over_mesh_make_announced_gateway();
       leds_toggle(LEDS_GREEN);
+    }
+    if (device_type_seting==TARGET_TYPE){
+      unsigned char finded,not_first,i;
+      finded =0;
+      not_first=0;
+      for (i=0;i<UIP_DS6_ADDR_NB;i++){
+        if(uip_ipaddr_prefixcmp(&uip_ds6_if.addr_list[i].ipaddr, &inside_prefix, 128)
+            && uip_ds6_if.addr_list[i].isused){
+          finded=i+1;
+          break;
+        }else if(uip_ds6_if.addr_list[i].isused){
+          not_first=1;
+        }
+      }
+      if(finded){
+        PRINTF("FINDED SELF ADDRESS\n");
+        if(not_first){
+          PRINTF("SELF ADDRESS NOT FIRST\n");
+          PRINT6ADDR(&inside_prefix);
+          for(i=0;i<(finded-1);i++){
+            uip_ds6_addr_rm(&uip_ds6_if.addr_list[i]);
+          }
+          uip_ds6_addr_add(&inside_prefix, 0, ADDR_AUTOCONF);
+        }else{
+          PRINTF("SELF ADDRESS FIRST\n");
+        }
+      }else{
+        PRINTF("DON'T FINDED SELF ADDRESS\n");
+        PRINT6ADDR(&inside_prefix);
+        uip_ds6_addr_add(&inside_prefix, 0, ADDR_AUTOCONF);
+      }
     }
 
 
