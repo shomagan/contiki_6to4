@@ -54,23 +54,30 @@
 
 #define DEBUG DEBUG_NONE
 #include "net/ip/uip-debug.h"
+extern uip_ipaddr_t ipaddr2;
+extern unsigned char ipaddr2_set;
 extern uip_ipaddr_t inside_prefix;
 static uip_ipaddr_t prefix;
+
+static unsigned char first=0;
 
 uint8_t time_blink;
 uint8_t device_type_seting;
 #define ROUTER_TYPE 1
 #define TARGET_TYPE 2
 static int def_rt_rssi = 0;
+PROCESS(process_1min_timer, "Timer");
+static int counter_ctimer;
+static struct ctimer timer_ctimer;
 PROCESS(border_router_process, "Border router process");
 
 #if WEBSERVER==0
 /* No webserver */
-AUTOSTART_PROCESSES(&border_router_process);
+AUTOSTART_PROCESSES(&border_router_process,&process_1min_timer);
 #elif WEBSERVER>1
 /* Use an external webserver application */
 #include "webserver-nogui.h"
-AUTOSTART_PROCESSES(&border_router_process,&webserver_nogui_process);
+AUTOSTART_PROCESSES(&border_router_process,&webserver_nogui_process,&process_1min_timer);
 #else
 /* Use simple webserver with only one page for minimum footprint.
  * Multiple connections can result in interleaved tcp segments since
@@ -107,7 +114,7 @@ PROCESS_THREAD(webserver_nogui_process, ev, data)
 
   PROCESS_END();
 }
-AUTOSTART_PROCESSES(&border_router_process,&webserver_nogui_process);
+AUTOSTART_PROCESSES(&border_router_process,&webserver_nogui_process,&process_1min_timer);
 
 static const char *TOP = "<html><head><title>ContikiRPL</title></head><body>\n";
 static const char *BOTTOM = "</body></html>\n";
@@ -359,6 +366,38 @@ set_prefix_64(uip_ipaddr_t *prefix_64)
   }
 }
 /*---------------------------------------------------------------------------*/
+void do_timeout(){
+  ctimer_reset(&timer_ctimer);
+  if (device_type_seting==TARGET_TYPE){
+    uip_ipaddr_t temp_ip;
+    unsigned char i;
+    leds_toggle(LEDS_RED);
+    if (first==0){
+      PRINTF("\nProcess 2: first");
+      first=1;
+    }else{
+      first = 0;
+      PRINTF("\nProcess 2: second");
+    }
+  }
+  print_local_addresses();
+  PRINTF("\nProcess 2: CTimer callback called");
+  counter_ctimer++;
+}
+/*---------------------------------------------------------------------------*/
+
+PROCESS_THREAD(process_1min_timer, ev, data)
+{
+  PROCESS_BEGIN();
+  PRINTF("\nSTART Process 2");
+  while(1) {
+    ctimer_set(&timer_ctimer, 60 * CLOCK_SECOND, do_timeout, NULL);
+    PROCESS_YIELD();
+  }
+
+  PROCESS_END();
+}
+/*---------------------------------------------------------------------------*/
 PROCESS_THREAD(border_router_process, ev, data)
 {
   static struct etimer et;
@@ -402,6 +441,8 @@ PROCESS_THREAD(border_router_process, ev, data)
   print_local_addresses();
 #endif
   PRINTF("UIP_CONF_TCP_MSS %u \n",UIP_CONF_TCP_MSS);
+  PRINTF("UIP_ND6_DEF_MAXDADNS %u \n",UIP_ND6_DEF_MAXDADNS);
+  PRINTF("UIP_CONF_ND6_SEND_NA %u \n",UIP_CONF_ND6_SEND_NA);
   while(1) {
     etimer_set(&et, CLOCK_SECOND*time_blink);
     PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
@@ -411,38 +452,94 @@ PROCESS_THREAD(border_router_process, ev, data)
       leds_toggle(LEDS_GREEN);
     }
     if (device_type_seting==TARGET_TYPE){
-      unsigned char finded,not_first,i;
-      finded =0;
-      not_first=0;
-      for (i=0;i<UIP_DS6_ADDR_NB;i++){
-        if(uip_ipaddr_prefixcmp(&uip_ds6_if.addr_list[i].ipaddr, &inside_prefix, 128)
-            && uip_ds6_if.addr_list[i].isused){
-          finded=i+1;
-          break;
-        }else if(uip_ds6_if.addr_list[i].isused){
-          not_first=1;
-        }
-      }
-      if(finded){
-        PRINTF("FINDED SELF ADDRESS\n");
-        if(not_first){
-          PRINTF("SELF ADDRESS NOT FIRST\n");
-          PRINT6ADDR(&inside_prefix);
-          for(i=0;i<(finded-1);i++){
-            uip_ds6_addr_rm(&uip_ds6_if.addr_list[i]);
+      unsigned char finded,i;
+      if(ipaddr2_set){
+        if(first){
+          finded =0;
+          for (i=0;i<UIP_DS6_ADDR_NB;i++){
+            if(uip_ipaddr_prefixcmp(&uip_ds6_if.addr_list[i].ipaddr, &inside_prefix, 128)
+                && uip_ds6_if.addr_list[i].isused){
+              finded=i+1;
+              break;
+            }
           }
-          uip_ds6_addr_add(&inside_prefix, 0, ADDR_AUTOCONF);
+          if(finded){
+            PRINTF("FINDED SELF ADDRESS\n");
+            if(finded > 1){
+              PRINTF("SELF ADDRESS NOT FIRST\n");
+              PRINT6ADDR(&inside_prefix);
+              for(i=0;i<(finded);i++){
+                uip_ds6_addr_rm(&uip_ds6_if.addr_list[i]);
+              }
+              uip_ds6_addr_add(&ipaddr2, 0, ADDR_AUTOCONF);
+              uip_ds6_addr_add(&inside_prefix, 0, ADDR_AUTOCONF);
+            }else{
+              PRINTF("SELF ADDRESS FIRST\n");
+            }
+          }else{
+            PRINTF("DON'T FINDED SELF ADDRESS\n");
+            PRINT6ADDR(&inside_prefix);
+            uip_ds6_addr_add(&ipaddr2, 0, ADDR_AUTOCONF);
+            uip_ds6_addr_add(&inside_prefix, 0, ADDR_AUTOCONF);
+          }
         }else{
-          PRINTF("SELF ADDRESS FIRST\n");
+          finded =0;
+          for (i=0;i<UIP_DS6_ADDR_NB;i++){
+            if(uip_ipaddr_prefixcmp(&uip_ds6_if.addr_list[i].ipaddr, &ipaddr2, 128)
+                && uip_ds6_if.addr_list[i].isused){
+              finded=i+1;
+              break;
+            }
+          }
+          if(finded){
+            PRINTF("SECOND ADDRESS\n");
+            if(finded > 1){
+              PRINTF("SECOND ADDRESS NOT FIRST\n");
+              PRINT6ADDR(&ipaddr2);
+              for(i=0;i<(finded);i++){
+                uip_ds6_addr_rm(&uip_ds6_if.addr_list[i]);
+              }
+              uip_ds6_addr_add(&inside_prefix, 0, ADDR_AUTOCONF);
+              uip_ds6_addr_add(&ipaddr2, 0, ADDR_AUTOCONF);
+            }else{
+              PRINTF("SECOND ADDRESS FIRST\n");
+            }
+          }else{
+            PRINTF("DON'T FIND SECOND ADDRESS\n");
+            PRINT6ADDR(&ipaddr2);
+            uip_ds6_addr_add(&inside_prefix, 0, ADDR_AUTOCONF);
+            uip_ds6_addr_add(&ipaddr2, 0, ADDR_AUTOCONF);
+
+          }
         }
       }else{
-        PRINTF("DON'T FINDED SELF ADDRESS\n");
-        PRINT6ADDR(&inside_prefix);
-        uip_ds6_addr_add(&inside_prefix, 0, ADDR_AUTOCONF);
+        finded =0;
+        for (i=0;i<UIP_DS6_ADDR_NB;i++){
+          if(uip_ipaddr_prefixcmp(&uip_ds6_if.addr_list[i].ipaddr, &inside_prefix, 128)
+              && uip_ds6_if.addr_list[i].isused){
+            finded=i+1;
+            break;
+          }
+        }
+        if(finded){
+          PRINTF("FINDED SELF ADDRESS\n");
+          if(finded > 1){
+            PRINTF("SELF ADDRESS NOT FIRST\n");
+            PRINT6ADDR(&inside_prefix);
+            for(i=0;i<(finded-1);i++){
+              uip_ds6_addr_rm(&uip_ds6_if.addr_list[i]);
+            }
+            uip_ds6_addr_add(&inside_prefix, 0, ADDR_AUTOCONF);
+          }else{
+            PRINTF("SELF ADDRESS FIRST\n");
+          }
+        }else{
+          PRINTF("DON'T FINDED SELF ADDRESS\n");
+          PRINT6ADDR(&inside_prefix);
+          uip_ds6_addr_add(&inside_prefix, 0, ADDR_AUTOCONF);
+        }
       }
     }
-
-
   }
 
   PROCESS_END();

@@ -124,6 +124,8 @@ set_tx_power_cc2592(radio_value_t power)
 
 void set_prefix_64(uip_ipaddr_t *);
 uip_ipaddr_t inside_prefix;
+uip_ipaddr_t ipaddr2;
+unsigned char ipaddr2_set=0;
 static uip_ipaddr_t last_sender;
 /*---------------------------------------------------------------------------*/
 static uint16_t
@@ -189,7 +191,6 @@ slip_input_callback(void)
   unsigned short chek_summ,chek_summ_recv;
   uip_ds6_addr_t *ds6_addr_t;
   uip_ds6_aaddr_t **ip_address;
-  static uip_ipaddr_t own_ipaddr;
 
   chek_summ =0;
  // PRINTF("SIN: %u\n", uip_len);
@@ -259,15 +260,10 @@ slip_input_callback(void)
       }else{
         leds_on(LEDS_RED);
         //set new IPv6 addres
-        uip_ipaddr_t ipaddr;
         uip_lladdr_t lladdr;
-        unsigned char finded,not_first,number;
-        finded=0;
-        not_first=0;
-        memcpy(&own_ipaddr, &uip_buf[12], 8);
-        memcpy(&ipaddr, &uip_buf[12], 8);
+        unsigned char number,finded;
         memcpy(&inside_prefix, &uip_buf[12], 8);
-        lladdr.addr[0] = uip_buf[20];
+				lladdr.addr[0] = uip_buf[20];
     		lladdr.addr[1] = uip_buf[21];
     		lladdr.addr[2] = uip_buf[22];
     		lladdr.addr[3] = uip_buf[23];
@@ -275,44 +271,31 @@ slip_input_callback(void)
         lladdr.addr[5] = uip_buf[25];
         lladdr.addr[6] = uip_buf[26];
         lladdr.addr[7] = uip_buf[27];
-  			uip_ds6_set_addr_iid(&inside_prefix,&lladdr);
+				uip_ds6_set_addr_iid(&inside_prefix,&lladdr);
+        finded = 0;
         for (i=0;i<UIP_DS6_ADDR_NB;i++){
           if(uip_ipaddr_prefixcmp(&uip_ds6_if.addr_list[i].ipaddr, &inside_prefix, 128)
               && uip_ds6_if.addr_list[i].isused){
             finded=i+1;
             break;
-          }else if(uip_ds6_if.addr_list[i].isused){
-            not_first=1;
           }
         }
+        PRINTF("inside_prefix\n");
+        PRINT6ADDR(&inside_prefix);
+        PRINTF("\n");
+
         if(finded){
           PRINTF("FINDED SELF ADDRESS\n");
-          if(not_first){
-            PRINTF("SELF ADDRESS NOT FIRST\n");
-            print_local_addresses();
-            PRINT6ADDR(&inside_prefix);
-            for(i=0;i<(finded-1);i++){
-              uip_ds6_addr_rm(&uip_ds6_if.addr_list[i]);
-            }
-            ds6_addr_t = uip_ds6_addr_add(&inside_prefix, 0, ADDR_AUTOCONF);
-          }else{
-            PRINTF("SELF ADDRESS FIRST\n");
-          }
-          uip_buf[12] = lladdr.addr[4];
-          uip_buf[13] = lladdr.addr[5];
-          uip_buf[14] = lladdr.addr[6];
-          uip_buf[15] = lladdr.addr[7];
-          slip_write(uip_buf, 16);
         }else{
           PRINTF("DON'T FINDED SELF ADDRESS\n");
           PRINT6ADDR(&inside_prefix);
-	        ds6_addr_t = uip_ds6_addr_add(&inside_prefix, 0, ADDR_AUTOCONF);
-          uip_buf[12] = ds6_addr_t->ipaddr.u8[12];
-          uip_buf[13] = ds6_addr_t->ipaddr.u8[13];
-          uip_buf[14] = ds6_addr_t->ipaddr.u8[14];
-          uip_buf[15] = ds6_addr_t->ipaddr.u8[15];
-          slip_write(uip_buf, 16);
+          uip_ds6_addr_add(&inside_prefix, 0, ADDR_AUTOCONF);
         }
+        uip_buf[12] = inside_prefix.u8[12];
+        uip_buf[13] = inside_prefix.u8[13];
+        uip_buf[14] = inside_prefix.u8[14];
+        uip_buf[15] = inside_prefix.u8[15];             
+        slip_write(uip_buf, 16);
         print_local_addresses();
         device_type_seting = TARGET_TYPE;
         time_blink =1;
@@ -343,12 +326,11 @@ slip_input_callback(void)
         device_type_seting=0;
         watchdog_reboot();
       }else{
-        
         //set new IPv6 addres
-        uip_ipaddr_t ipaddr;
         uip_lladdr_t lladdr;
-        memcpy(&ipaddr, &uip_buf[13], 8);
-        lladdr.addr[0] = uip_buf[21];
+        unsigned char finded;
+        memcpy(&ipaddr2, &uip_buf[13], 8);
+				lladdr.addr[0] = uip_buf[21];
     		lladdr.addr[1] = uip_buf[22];
     		lladdr.addr[2] = uip_buf[23];
     		lladdr.addr[3] = uip_buf[24];
@@ -356,45 +338,17 @@ slip_input_callback(void)
         lladdr.addr[5] = uip_buf[26];
         lladdr.addr[6] = uip_buf[27];
         lladdr.addr[7] = uip_buf[28];
-        uip_ds6_set_addr_iid(&ipaddr, &lladdr);
-        if(device_type_seting==TARGET_TYPE){
-          unsigned char finded;
-          finded = 0;
-          for (i=0;i<UIP_DS6_ADDR_NB;i++){
-            if(uip_ipaddr_prefixcmp(&uip_ds6_if.addr_list[i].ipaddr, &ipaddr, 128)
-                && uip_ds6_if.addr_list[i].isused){
-              finded=1;
-            }
-          }
-
-          if(finded==0) {
-            PRINTF("DON'T FINDED SECOND ADDRESS\n");
-            ds6_addr_t = uip_ds6_addr_add(&ipaddr, 0, ADDR_AUTOCONF);
-            uip_buf[13] = ds6_addr_t->ipaddr.u8[12];
-            uip_buf[14] = ds6_addr_t->ipaddr.u8[13];
-            uip_buf[15] = ds6_addr_t->ipaddr.u8[14];
-            uip_buf[16] = ds6_addr_t->ipaddr.u8[15];
-          }else{
-            PRINTF("FINDED SECOND ADDRESS\n");
-          }
-          if(uip_ipaddr_prefixcmp(&uip_ds6_if.addr_list[0].ipaddr, &inside_prefix, 128)) {
-            PRINTF("SELF ADDRESS FIRST\n");
-          }else{
-            PRINTF("SELF ADDRESS NOT FIRST\n");
-            for(i =1;i<UIP_DS6_ADDR_NB;i++){
-              if(uip_ipaddr_prefixcmp(&uip_ds6_if.addr_list[i].ipaddr, &inside_prefix, 128)){
-                uip_ds6_addr_rm(&uip_ds6_if.addr_list[i]);
-                break;
-              }
-            }
-            ds6_addr_t = uip_ds6_addr_add(&inside_prefix, 0, ADDR_AUTOCONF);
-          }
-          uip_buf[13] = lladdr.addr[4];
-          uip_buf[14] = lladdr.addr[5];
-          uip_buf[15] = lladdr.addr[6];
-          uip_buf[16] = lladdr.addr[7];
-          slip_write(uip_buf, 17);
-        }
+				uip_ds6_set_addr_iid(&ipaddr2,&lladdr);
+        finded = 0;
+        ipaddr2_set = 1;
+        PRINTF("ipaddr2\n");
+        PRINT6ADDR(&ipaddr2);
+        PRINTF("\n");
+        uip_buf[13] = ipaddr2.u8[12];
+        uip_buf[14] = ipaddr2.u8[13];
+        uip_buf[15] = ipaddr2.u8[14];
+        uip_buf[16] = ipaddr2.u8[15];
+        slip_write(uip_buf, 17);
         print_local_addresses();
       }
     }

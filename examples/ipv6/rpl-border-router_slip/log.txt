@@ -1,337 +1,277 @@
 using saved target 'cc2538dk'
-/usr/bin/sh: /usr/bin/sed: Permission denied
 mkdir obj_cc2538dk
+  CC        ../../../cpu/cc2538/./ieee-addr.c
+  CC        ../../../cpu/cc2538/cc2538.lds
+  CC        ../../../cpu/cc2538/./startup-gcc.c
   CC        ../../../core/dev/leds.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../platform/cc2538dk/dev/leds-arch.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../platform/cc2538dk/./contiki-main.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/lib/sensors.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../platform/cc2538dk/dev/smartrf-sensors.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../platform/cc2538dk/dev/button-sensor.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../platform/cc2538dk/dev/als-sensor.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../cpu/cc2538/./clock.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../cpu/cc2538/./rtimer-arch.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../cpu/cc2538/dev/uart.c
 ../../../cpu/cc2538/dev/uart.c:228:1: warning: 'permit_pm1' defined but not used [-Wunused-function]
  permit_pm1(void)
- ^
-/usr/bin/sh: /usr/bin/sed: Permission denied
+ ^~~~~~~~~~
   CC        ../../../cpu/cc2538/dev/watchdog.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../cpu/cc2538/dev/nvic.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../cpu/cc2538/./cpu.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../cpu/cc2538/dev/sys-ctrl.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../cpu/cc2538/dev/gpio.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../cpu/cc2538/dev/ioc.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../cpu/cc2538/dev/spi.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../cpu/cc2538/dev/adc.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../cpu/cc2538/dev/crypto.c
 ../../../cpu/cc2538/dev/crypto.c:76:1: warning: 'permit_pm1' defined but not used [-Wunused-function]
  permit_pm1(void)
- ^
-/usr/bin/sh: /usr/bin/sed: Permission denied
+ ^~~~~~~~~~
   CC        ../../../cpu/cc2538/dev/aes.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/dev/ecb.c
+  CC        ../../../cpu/cc2538/dev/cbc.c
+  CC        ../../../cpu/cc2538/dev/ctr.c
+  CC        ../../../cpu/cc2538/dev/cbc-mac.c
+  CC        ../../../cpu/cc2538/dev/gcm.c
   CC        ../../../cpu/cc2538/dev/ccm.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../cpu/cc2538/dev/sha256.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../cpu/cc2538/dev/cc2538-aes-128.c
+  CC        ../../../cpu/cc2538/dev/cc2538-ccm-star.c
   CC        ../../../cpu/cc2538/dev/cc2538-rf.c
-../../../cpu/cc2538/dev/cc2538-rf.c: In function 'on':
-../../../cpu/cc2538/dev/cc2538-rf.c:408:0: warning: "HGM_PIN" redefined [enabled by default]
- #define HGM_PIN  (1 << 2)
- ^
-In file included from ../../../platform/cc2538dk/./contiki-conf.h:283:0,
-                 from ../../../core/./contiki.h:38,
-                 from ../../../cpu/cc2538/dev/cc2538-rf.c:38:
-../../../platform/cc2538dk/dev/board.h:130:0: note: this is the location of the previous definition
- #define HGM_PIN               4
- ^
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../cpu/cc2538/dev/udma.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../cpu/cc2538/./lpm.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../cpu/cc2538/dev/pka.c
 ../../../cpu/cc2538/dev/pka.c:79:1: warning: 'permit_pm1' defined but not used [-Wunused-function]
  permit_pm1(void)
- ^
-/usr/bin/sh: /usr/bin/sed: Permission denied
+ ^~~~~~~~~~
   CC        ../../../cpu/cc2538/dev/bignum-driver.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../cpu/cc2538/dev/ecc-driver.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../cpu/cc2538/dev/ecc-algorithm.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../cpu/cc2538/dev/ecc-curve.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../cpu/cc2538/./dbg.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
-  CC        ../../../cpu/cc2538/./ieee-addr.c
   CC        ../../../cpu/cc2538/./slip-arch.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/dev/slip.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../cpu/cc2538/dev/i2c.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../cpu/cc2538/dev/cc2538-temp-sensor.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../cpu/cc2538/dev/vdd3-sensor.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/cfs/cfs-coffee.c
+  CC        ../../../cpu/cc2538/./cfs-coffee-arch.c
+  CC        ../../../cpu/cc2538/dev/pwm.c
+../../../cpu/cc2538/dev/pwm.c:78:1: warning: 'permit_pm1' defined but not used [-Wunused-function]
+ permit_pm1(void)
+ ^~~~~~~~~~
   CC        ../../../cpu/cc2538/../arm/common/dbg-io/dbg-printf.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../cpu/cc2538/../arm/common/dbg-io/dbg-snprintf.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../cpu/cc2538/../arm/common/dbg-io/dbg-sprintf.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../cpu/cc2538/../arm/common/dbg-io/strformat.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../cpu/cc2538/../cc253x/usb/common/usb-core.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../cpu/cc2538/../cc253x/usb/common/cdc-acm/cdc-acm.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../cpu/cc2538/usb/usb-arch.c
 ../../../cpu/cc2538/usb/usb-arch.c:316:1: warning: 'permit_pm1' defined but not used [-Wunused-function]
  permit_pm1(void)
- ^
-/usr/bin/sh: /usr/bin/sed: Permission denied
+ ^~~~~~~~~~
   CC        ../../../cpu/cc2538/usb/usb-serial.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../cpu/cc2538/usb/cdc-acm-descriptors.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/sys/arg.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/sys/autostart.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/sys/compower.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/sys/ctimer.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/sys/energest.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/sys/etimer.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/sys/mt.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/sys/process.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/sys/procinit.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/sys/rtimer.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/sys/stimer.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/sys/timer.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/dev/nullradio.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/dev/serial-line.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/lib/aes-128.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/lib/assert.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/lib/ccm-star.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/lib/crc16.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/lib/gcr.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/lib/ifft.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/lib/list.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/lib/me.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/lib/me_tabs.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/lib/memb.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/lib/mmem.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/lib/petsciiconv.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/lib/print-stats.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../cpu/cc2538/dev/random.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/lib/ringbuf.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/lib/ringbufindex.c
   CC        ../../../core/lib/settings.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/lib/trickle-timer.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/ipv6/sicslowpan.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/ipv6/uip-ds6-nbr.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/ipv6/uip-ds6-route.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/ipv6/uip-ds6.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/ipv6/uip-icmp6.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/ipv6/uip-nd6.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/ipv6/uip6.c
 ../../../core/net/ipv6/uip6.c: In function 'uip_process':
-../../../core/net/ipv6/uip6.c:1467:11: warning: implicit declaration of function 'slip_send' [-Wimplicit-function-declaration]
+../../../core/net/ipv6/uip6.c:1470:11: warning: implicit declaration of function 'slip_send' [-Wimplicit-function-declaration]
            slip_send();
-           ^
-../../../core/net/ipv6/uip6.c:1468:11: warning: implicit declaration of function 'leds_toggle' [-Wimplicit-function-declaration]
+           ^~~~~~~~~
+../../../core/net/ipv6/uip6.c:1471:11: warning: implicit declaration of function 'leds_toggle' [-Wimplicit-function-declaration]
            leds_toggle(LEDS_ORANGE);
-           ^
-/usr/bin/sh: /usr/bin/sed: Permission denied
+           ^~~~~~~~~~~
   CC        ../../../core/net/ip/dhcpc.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/ip/ip64-addr.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/ip/psock.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/ip/resolv.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/ip/simple-udp.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/ip/slipdev.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/ip/tcp-socket.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/ip/tcpip.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/ip/udp-socket.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/ip/uip-debug.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/ip/uip-nameserver.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/ip/uip-packetqueue.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/ip/uip-split.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/ip/uip-udp-packet.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/ip/uiplib.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/rpl/rpl-dag-root.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/rpl/rpl-dag.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/rpl/rpl-ext-header.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/rpl/rpl-icmp6.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/rpl/rpl-mrhof.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/rpl/rpl-of0.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/rpl/rpl-timers.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/rpl/rpl.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../lib/newlib/syscalls.c
   CC        ../../../core/net/linkaddr.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/nbr-table.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/netstack.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/packetbuf.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/queuebuf.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/mac/csma.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/mac/frame802154.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
+../../../core/net/mac/frame802154.c: In function 'frame802154_has_panid':
+../../../core/net/mac/frame802154.c:151:30: warning: self-comparison always evaluates to true [-Wtautological-compare]
+       if(fcf->dest_addr_mode == fcf->dest_addr_mode) {
+                              ^~
+  CC        ../../../core/net/mac/frame802154e-ie.c
   CC        ../../../core/net/mac/framer-802154.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/mac/framer-nullmac.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/mac/mac-sequence.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/mac/mac.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/mac/nordc.c
   CC        ../../../core/net/mac/nullmac.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/mac/nullrdc-noframer.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/mac/nullrdc.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/mac/phase.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/mac/contikimac/contikimac-framer.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/mac/contikimac/contikimac.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/llsec/anti-replay.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/llsec/ccm-star-packetbuf.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   CC        ../../../core/net/llsec/nullsec.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
-  AR        contiki-cc2538dk.a
-  CC        ../../../cpu/cc2538/cc2538.lds
-  CC        ../../../cpu/cc2538/./startup-gcc.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
+  CC        ../../../core/net/llsec/noncoresec/noncoresec.c
   CC        border-router.c
-border-router.c: In function 'process_thread_border_router_process':
-border-router.c:389:7: warning: implicit declaration of function 'leds_toggle' [-Wimplicit-function-declaration]
-       leds_toggle(LEDS_GREEN);
-       ^
-border-router.c: At top level:
-border-router.c:59:22: warning: 'et' defined but not used [-Wunused-variable]
- static struct etimer et;
-                      ^
+border-router.c: In function 'generate_routes':
+border-router.c:276:18: warning: implicit declaration of function 'get_channel' [-Wimplicit-function-declaration]
+   channel_temp = get_channel();
+                  ^~~~~~~~~~~
+border-router.c: In function 'do_timeout':
+border-router.c:374:5: warning: implicit declaration of function 'leds_toggle' [-Wimplicit-function-declaration]
+     leds_toggle(LEDS_RED);
+     ^~~~~~~~~~~
+border-router.c:373:19: warning: unused variable 'i' [-Wunused-variable]
+     unsigned char i;
+                   ^
+border-router.c:372:18: warning: unused variable 'temp_ip' [-Wunused-variable]
+     uip_ipaddr_t temp_ip;
+                  ^~~~~~~
   CC        slip-bridge.c
 slip-bridge.c: In function 'slip_input_callback':
-slip-bridge.c:132:9: warning: implicit declaration of function 'watchdog_reboot' [-Wimplicit-function-declaration]
+slip-bridge.c:206:9: warning: implicit declaration of function 'watchdog_reboot' [-Wimplicit-function-declaration]
          watchdog_reboot();
-         ^
-slip-bridge.c:134:9: warning: implicit declaration of function 'leds_on' [-Wimplicit-function-declaration]
+         ^~~~~~~~~~~~~~~
+slip-bridge.c:208:9: warning: implicit declaration of function 'leds_on' [-Wimplicit-function-declaration]
          leds_on(LEDS_RED);
-         ^
-slip-bridge.c:162:3: warning: pointer targets in passing argument 1 of 'strncmp' differ in signedness [-Wpointer-sign]
-   }else if(strncmp(uip_buf, "AdressRouter", 12) == 0) {
-   ^
-In file included from c:\yagarto\arm-none-eabi\include\string.h:10:0,
+         ^~~~~~~
+In file included from slip-bridge.c:41:0:
+../../../core/./net/ip/uip.h:523:17: warning: pointer targets in passing argument 1 of 'strncmp' differ in signedness [-Wpointer-sign]
+ #define uip_buf (uip_aligned_buf.u8)
+                 ^
+slip-bridge.c:236:20: note: in expansion of macro 'uip_buf'
+   }else if(strncmp(uip_buf, "AdressRouter", 12) == 0){
+                    ^~~~~~~
+In file included from c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\string.h:10:0,
                  from ../../../platform/cc2538dk/./contiki-conf.h:12,
                  from ../../../core/./net/ip/uipopt.h:74,
-                 from ../../../core/./net/ip/uip.h:92,
+                 from ../../../core/./net/ip/uip.h:86,
                  from slip-bridge.c:41:
-c:\yagarto\arm-none-eabi\include\string.h:35:6: note: expected 'const char *' but argument is of type 'uint8_t *'
+c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\string.h:39:6: note: expected 'const char *' but argument is of type 'uint8_t * {aka unsigned char *}'
  int  _EXFUN(strncmp,(const char *, const char *, size_t));
       ^
-slip-bridge.c:178:3: warning: pointer targets in passing argument 1 of 'strncmp' differ in signedness [-Wpointer-sign]
+In file included from slip-bridge.c:41:0:
+../../../core/./net/ip/uip.h:523:17: warning: pointer targets in passing argument 1 of 'strncmp' differ in signedness [-Wpointer-sign]
+ #define uip_buf (uip_aligned_buf.u8)
+                 ^
+slip-bridge.c:252:21: note: in expansion of macro 'uip_buf'
    }else if (strncmp(uip_buf, "AdressTarget", 12) == 0){
-   ^
-In file included from c:\yagarto\arm-none-eabi\include\string.h:10:0,
+                     ^~~~~~~
+In file included from c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\string.h:10:0,
                  from ../../../platform/cc2538dk/./contiki-conf.h:12,
                  from ../../../core/./net/ip/uipopt.h:74,
-                 from ../../../core/./net/ip/uip.h:92,
+                 from ../../../core/./net/ip/uip.h:86,
                  from slip-bridge.c:41:
-c:\yagarto\arm-none-eabi\include\string.h:35:6: note: expected 'const char *' but argument is of type 'uint8_t *'
+c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\string.h:39:6: note: expected 'const char *' but argument is of type 'uint8_t * {aka unsigned char *}'
  int  _EXFUN(strncmp,(const char *, const char *, size_t));
       ^
-slip-bridge.c:248:5: warning: implicit declaration of function 'leds_toggle' [-Wimplicit-function-declaration]
+slip-bridge.c:264:23: warning: unused variable 'number' [-Wunused-variable]
+         unsigned char number,finded;
+                       ^~~~~~
+In file included from slip-bridge.c:41:0:
+../../../core/./net/ip/uip.h:523:17: warning: pointer targets in passing argument 1 of 'strncmp' differ in signedness [-Wpointer-sign]
+ #define uip_buf (uip_aligned_buf.u8)
+                 ^
+slip-bridge.c:320:21: note: in expansion of macro 'uip_buf'
+   }else if (strncmp(uip_buf, "Adress2Target", 13) == 0){
+                     ^~~~~~~
+In file included from c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\string.h:10:0,
+                 from ../../../platform/cc2538dk/./contiki-conf.h:12,
+                 from ../../../core/./net/ip/uipopt.h:74,
+                 from ../../../core/./net/ip/uip.h:86,
+                 from slip-bridge.c:41:
+c:\program files (x86)\gnu tools arm embedded\6 2017-q2-update\arm-none-eabi\include\string.h:39:6: note: expected 'const char *' but argument is of type 'uint8_t * {aka unsigned char *}'
+ int  _EXFUN(strncmp,(const char *, const char *, size_t));
+      ^
+slip-bridge.c:331:23: warning: variable 'finded' set but not used [-Wunused-but-set-variable]
+         unsigned char finded;
+                       ^~~~~~
+slip-bridge.c:361:7: warning: implicit declaration of function 'set_channel' [-Wimplicit-function-declaration]
+       set_channel(uip_buf[2]) ;// range [11,26]
+       ^~~~~~~~~~~
+slip-bridge.c:362:20: warning: implicit declaration of function 'get_channel' [-Wimplicit-function-declaration]
+       uip_buf[2] = get_channel();
+                    ^~~~~~~~~~~
+slip-bridge.c:380:33: warning: implicit declaration of function 'sicslowpan_get_last_rssi' [-Wimplicit-function-declaration]
+     def_rt_rssi = (signed short)sicslowpan_get_last_rssi();
+                                 ^~~~~~~~~~~~~~~~~~~~~~~~
+slip-bridge.c:381:23: warning: implicit declaration of function 'abs' [-Wimplicit-function-declaration]
+     def_rt_rssi_abs = abs(def_rt_rssi);
+                       ^~~
+slip-bridge.c:374:9: warning: unused variable 'j' [-Wunused-variable]
+     int j;
+         ^
+slip-bridge.c:397:5: warning: implicit declaration of function 'leds_toggle' [-Wimplicit-function-declaration]
      leds_toggle(LEDS_YELLOW);
-     ^
-/usr/bin/sh: /usr/bin/sed: Permission denied
+     ^~~~~~~~~~~
+slip-bridge.c:193:21: warning: unused variable 'ip_address' [-Wunused-variable]
+   uip_ds6_aaddr_t **ip_address;
+                     ^~~~~~~~~~
+slip-bridge.c:192:19: warning: unused variable 'ds6_addr_t' [-Wunused-variable]
+   uip_ds6_addr_t *ds6_addr_t;
+                   ^~~~~~~~~~
+slip-bridge.c:190:19: warning: unused variable 'j' [-Wunused-variable]
+   unsigned char i,j;
+                   ^
   CC        httpd-simple.c
-/usr/bin/sh: /usr/bin/sed: Permission denied
   LD        border-router.elf
 arm-none-eabi-objcopy -O ihex border-router.elf border-router.hex
 arm-none-eabi-objcopy -O binary --gap-fill 0xff border-router.elf border-router.bin

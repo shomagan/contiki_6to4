@@ -44,7 +44,7 @@
 #endif
 
 #ifndef UIP_CONF_RECEIVE_WINDOW
-#define UIP_CONF_RECEIVE_WINDOW  384
+#define UIP_CONF_RECEIVE_WINDOW  512
 #endif
 
 #ifndef WEBSERVER_CONF_CFS_CONNS
@@ -77,7 +77,7 @@ extern radio_value_t get_tx_power_cc2592(void);
 extern uint8_t device_type_seting;
 extern uint8_t time_blink;
 
-#define DISCOVERY 0
+#define DISCOVERY 1
 
 
 //#define SICSLOWPAN_CONF_FRAG                 0
